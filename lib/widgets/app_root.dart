@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:mili/widgets/devops_open_jars.dart';
 import 'package:mili/widgets/home_footer.dart';
 import 'package:mili/widgets/home_navs.dart';
 import 'devops_products.dart';
@@ -92,7 +93,7 @@ class _AppRootState extends State<AppRoot> {
               break;
             case '开源组件':
               _logger.d("loading open jar console.");
-              navigatorChanged(navigator, const DevopsCampboot());
+              navigatorChanged(navigator, const DevopsOpenJars());
               break;
             case '自研组件':
               _logger.d("loading jar console.");
