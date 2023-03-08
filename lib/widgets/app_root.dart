@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:mili/widgets/devops_campboot.dart';
 import 'package:mili/widgets/home_footer.dart';
 import 'package:mili/widgets/home_navs.dart';
-import 'package:mili/widgets/devops_products.dart';
-
-import '../utils/helper.dart';
+import 'devops_products.dart';
+import 'devops_campboot.dart';
+import '../utils/events.dart';
 
 class AppRoot extends StatefulWidget {
   const AppRoot({super.key, required this.title});
@@ -17,30 +16,26 @@ class AppRoot extends StatefulWidget {
 }
 
 class _AppRootState extends State<AppRoot> {
-  var logger = Logger();
-  final Helper _helper = Helper();
+  final _logger = Logger();
+  String _navigaotr = 'hello world';
+  Widget _navigatorClient = Container();
 
-  final _colorMainBackground = const Color.fromRGBO(75, 75, 75, 1);
-
-  int _counter = 0;
-
-  void _incrementCounter() {
+  void navigatorChanged(String navigator, Widget navigatorClient) {
+    _logger.d('set state');
     setState(() {
-      _counter++;
+      _navigaotr = navigator;
+      _navigatorClient = navigatorClient;
     });
   }
 
-  void _onPressed() {
-    _incrementCounter();
-  }
-
-  // left-right layout
+  // LR layout
   Row _layoutWorkspace() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
         Container(
+          alignment: Alignment.topLeft,
           width: 110,
           child: const HomeNavs(),
         ),
@@ -55,14 +50,20 @@ class _AppRootState extends State<AppRoot> {
                 color: const Color.fromRGBO(61, 61, 61, 1),
                 width: 1.0,
               )),
-              child: const DevopsProducts(),
+              child: Column(children: [
+                SizedBox(
+                  height: 50,
+                  child: Text(_navigaotr),
+                ),
+                Expanded(child: _navigatorClient)
+              ]),
               // child: const DevopsCampboot(),
             )),
       ],
     );
   }
 
-  // top-bottom layout
+  // TB layout
   Column _layoutMain() {
     return Column(
       children: <Widget>[
@@ -79,6 +80,31 @@ class _AppRootState extends State<AppRoot> {
 
   @override
   Widget build(BuildContext context) {
+    eventBus.on().listen((event) {
+      _logger.d(event.runtimeType);
+      switch (event.runtimeType) {
+        case EventOnNavigatorChanged:
+          var navigator = (event as EventOnNavigatorChanged).navigator;
+          switch (navigator) {
+            case '产品管理':
+              _logger.d("loading product console.");
+              navigatorChanged(navigator, const DevopsProducts());
+              break;
+            case '开源组件':
+              _logger.d("loading open jar console.");
+              navigatorChanged(navigator, const DevopsCampboot());
+              break;
+            case '自研组件':
+              _logger.d("loading jar console.");
+              break;
+            case '安全管理':
+              _logger.d("loading security console.");
+              break;
+          }
+          break;
+      }
+    });
+
     return _layoutMain();
   }
 }

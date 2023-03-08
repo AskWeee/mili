@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 import 'dart:io';
 
 import 'package:logger/logger.dart';
@@ -8,15 +7,23 @@ import 'package:http/http.dart' as http;
 class Helper {
   var logger = Logger();
 
-  Future<List?> testHttpGet() async {
+  // 测试：
+  // final Helper _helper = Helper();
+  // _helper.testDirectoryCreate();
+  // _helper.testHttpGet().then((value) {
+  //   logger.d(value);
+  // });
 
-    String url = 'http://10.12.2.211:8087/nexus/service/local/repositories/snapshots/content/?isLocal';
+  Future<List?> testHttpGet() async {
+    String url =
+        'http://10.12.2.211:8087/nexus/service/local/repositories/snapshots/content/?isLocal';
     // Uri uri = Uri(scheme: 'http', host: '10.12.2.211', port: 8087, path: '/nexus/service/local/repositories/snapshots/content/?isLocal');
 
     var headers = {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Credentials": 'true',
-      "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
+      "Access-Control-Allow-Headers":
+          "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
       "Access-Control-Allow-Methods": "POST, OPTIONS",
       'Content-Type': 'application/json',
       'Accept': '*/*'

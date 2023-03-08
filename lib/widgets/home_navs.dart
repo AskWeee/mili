@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import '../utils/helper.dart';
+import '../utils/events.dart';
 
 class HomeNavs extends StatefulWidget {
   const HomeNavs({super.key});
@@ -10,24 +10,17 @@ class HomeNavs extends StatefulWidget {
 }
 
 class _HomeNavsState extends State<HomeNavs> {
-  var logger = Logger();
-  final Helper _helper = Helper();
+  final _logger = Logger();
 
-  void _onPressedA() {
-    _helper.testDirectoryCreate();
+  void _onNavigatorPressed(String navigator) {
+    _logger.d('_onNavigatorPressed');
+    eventBus.fire(EventOnNavigatorChanged(navigator));
   }
 
-  void _onPressedB() {
-    _helper.testHttpGet().then((value) {
-      logger.d(value);
-    });
-  }
-
-  final _containerWidth = 80.0;
   final _colorLogoBackground = const Color.fromRGBO(0, 122, 204, 1);
   final _colorMainBackground = const Color.fromRGBO(75, 75, 75, 1);
-  var _colorNavigatorSelected = const Color.fromRGBO(255, 255, 255, 1);
-  var _colorNavigatorUnselected = const Color.fromRGBO(175, 175, 175, 1);
+  final _colorNavigatorSelected = const Color.fromRGBO(255, 255, 255, 1);
+  final _colorNavigatorUnselected = const Color.fromRGBO(175, 175, 175, 1);
 
   Stack _layoutMain() {
     return Stack(children: [
@@ -38,14 +31,13 @@ class _HomeNavsState extends State<HomeNavs> {
       Column(
         children: [
           Container(
-            // width: _containerWidth,
             height: 60,
             alignment: Alignment.topLeft,
             color: _colorLogoBackground,
             child: Stack(
               children: const [
                 Align(
-                  alignment: FractionalOffset(0.5, 0.5),
+                  alignment: Alignment.center,
                   child: Image(
                     image: AssetImage("assets/icons/icon-mm-2-white.png"),
                     width: 48,
@@ -64,14 +56,13 @@ class _HomeNavsState extends State<HomeNavs> {
             child: Container(
               alignment: Alignment.topLeft,
               color: _colorMainBackground,
-              width: _containerWidth,
               child: Wrap(
-                runSpacing: 10,
+                runSpacing: 5,
                 children: [
                   TextButton(
-                      onPressed: _onPressedA,
+                      onPressed: null,
                       child: Align(
-                        alignment: const FractionalOffset(0.5, 0.5),
+                        alignment: Alignment.center,
                         child: Text(
                           '开发平台',
                           style: TextStyle(
@@ -79,54 +70,67 @@ class _HomeNavsState extends State<HomeNavs> {
                         ),
                       )),
                   TextButton(
-                      onPressed: _onPressedA,
+                      onPressed: null,
                       child: Align(
                           alignment: Alignment.center,
                           child: Text(
-                            '工程管理',
-                            textAlign: TextAlign.center,
+                            '流程看板',
                             style: TextStyle(color: _colorNavigatorUnselected),
                           ))),
                   TextButton(
-                      onPressed: _onPressedA,
-                      child: Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            '组件管理',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: _colorNavigatorUnselected),
-                          ))),
-                  TextButton(
-                      onPressed: _onPressedA,
+                      onPressed: () => {_onNavigatorPressed('产品管理')},
                       child: Align(
                           alignment: Alignment.center,
                           child: Text(
                             '产品管理',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: _colorNavigatorSelected),
+                            style: TextStyle(color: _colorNavigatorUnselected),
                           ))),
                   TextButton(
-                      onPressed: _onPressedA,
+                      onPressed: null,
                       child: Align(
-                          alignment: const FractionalOffset(0.5, 0.5),
+                          alignment: Alignment.center,
                           child: Text(
-                            '融合调度',
-                            style: TextStyle(
-                                color: _colorNavigatorUnselected, fontSize: 16),
+                            '发布管理',
+                            style: TextStyle(color: _colorNavigatorUnselected),
                           ))),
                   TextButton(
-                      onPressed: _onPressedA,
-                      child: Text(
-                        '拓扑中心',
-                        style: TextStyle(
-                            color: _colorNavigatorUnselected, fontSize: 16),
-                      )),
+                      onPressed: null,
+                      child: Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            '源码管理',
+                            style: TextStyle(color: _colorNavigatorUnselected),
+                          ))),
+                  TextButton(
+                      onPressed: () => {_onNavigatorPressed('开源组件')},
+                      child: Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            '开源组件',
+                            style: TextStyle(color: _colorNavigatorUnselected),
+                          ))),
+                  TextButton(
+                      onPressed: () => {_onNavigatorPressed('自研组件')},
+                      child: Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            '自研组件',
+                            style: TextStyle(color: _colorNavigatorUnselected),
+                          ))),
+                  TextButton(
+                      onPressed: () => {_onNavigatorPressed('安全管理')},
+                      child: Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            '安全管理',
+                            style: TextStyle(color: _colorNavigatorUnselected),
+                          ))),
                 ],
               ),
             ),
           ),
           Container(
-            width: _containerWidth,
+            // width: _containerWidth,
             alignment: Alignment.topLeft,
             color: _colorMainBackground,
             child: Wrap(
