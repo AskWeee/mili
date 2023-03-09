@@ -44,7 +44,7 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
         Container(
           width: 60,
           alignment: Alignment.topLeft,
-          color: const Color.fromRGBO(75, 75, 75, 1),
+          color: const Color.fromRGBO(255, 75, 75, 1),
           child: Wrap(
             children: [
               TextButton(onPressed: _onPressedA, child: const Text('User')),
