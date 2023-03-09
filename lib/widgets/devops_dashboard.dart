@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import '../utils/helper.dart';
 
-class DevopsJarsir extends StatefulWidget {
-  const DevopsJarsir({super.key});
+class DevopsDashboard extends StatefulWidget {
+  const DevopsDashboard({super.key});
 
   @override
-  State<DevopsJarsir> createState() => _DevopsJarsirState();
+  State<DevopsDashboard> createState() => _DevopsDashboardState();
 }
 
-class _DevopsJarsirState extends State<DevopsJarsir> {
+class _DevopsDashboardState extends State<DevopsDashboard> {
   var logger = Logger();
   final Helper _helper = Helper();
 
@@ -30,8 +30,7 @@ class _DevopsJarsirState extends State<DevopsJarsir> {
           flex: 1,
           child: Container(
             alignment: Alignment.topLeft,
-            color: const Color.fromRGBO(75, 75, 75, 1),
-            width: 60,
+            color: const Color.fromRGBO(125, 125, 125, 1),
             child: Wrap(
               children: [
                 TextButton(onPressed: _onPressedA, child: const Text('CAMP')),
@@ -42,9 +41,9 @@ class _DevopsJarsirState extends State<DevopsJarsir> {
           ),
         ),
         Container(
-          width: 60,
           alignment: Alignment.topLeft,
-          color: const Color.fromRGBO(75, 75, 75, 1),
+          color: const Color.fromRGBO(175, 175, 175, 1),
+          height: 100,
           child: Wrap(
             children: [
               TextButton(onPressed: _onPressedA, child: const Text('User')),

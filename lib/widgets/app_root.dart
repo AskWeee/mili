@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:mili/widgets/devops_boco_jars.dart';
+import 'package:mili/widgets/devops_dashboard.dart';
 import 'package:mili/widgets/devops_open_jars.dart';
+import 'package:mili/widgets/devops_release.dart';
+import 'package:mili/widgets/devops_security.dart';
+import 'package:mili/widgets/devops_src.dart';
 import 'package:mili/widgets/home_footer.dart';
 import 'package:mili/widgets/home_navs.dart';
 import 'devops_products.dart';
@@ -90,20 +94,26 @@ class _AppRootState extends State<AppRoot> {
         case EventOnNavigatorChanged:
           var navigator = (event as EventOnNavigatorChanged).navigator;
           switch (navigator) {
+            case '流程看板':
+              navigatorChanged(navigator, const DevopsDashboard());
+              break;
             case '产品管理':
-              _logger.d("loading product console.");
               navigatorChanged(navigator, const DevopsProducts());
               break;
+            case '发布管理':
+              navigatorChanged(navigator, const DevopsRelease());
+              break;
+            case '源码管理':
+              navigatorChanged(navigator, const DevopsSrc());
+              break;
             case '开源组件':
-              _logger.d("loading open jar console.");
               navigatorChanged(navigator, const DevopsOpenJars());
               break;
             case '自研组件':
-              _logger.d("loading jar console.");
               navigatorChanged(navigator, const DevopsBocoJars());
               break;
             case '安全管理':
-              _logger.d("loading security console.");
+              navigatorChanged(navigator, const DevopsSecurity());
               break;
           }
           break;

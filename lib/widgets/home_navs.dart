@@ -70,7 +70,7 @@ class _HomeNavsState extends State<HomeNavs> {
                         ),
                       )),
                   TextButton(
-                      onPressed: null,
+                      onPressed: () => {_onNavigatorPressed('流程看板')},
                       child: Align(
                           alignment: Alignment.center,
                           child: Text(
@@ -86,7 +86,7 @@ class _HomeNavsState extends State<HomeNavs> {
                             style: TextStyle(color: _colorNavigatorUnselected),
                           ))),
                   TextButton(
-                      onPressed: null,
+                      onPressed: () => {_onNavigatorPressed('发布管理')},
                       child: Align(
                           alignment: Alignment.center,
                           child: Text(
@@ -94,7 +94,7 @@ class _HomeNavsState extends State<HomeNavs> {
                             style: TextStyle(color: _colorNavigatorUnselected),
                           ))),
                   TextButton(
-                      onPressed: null,
+                      onPressed: () => {_onNavigatorPressed('源码管理')},
                       child: Align(
                           alignment: Alignment.center,
                           child: Text(
