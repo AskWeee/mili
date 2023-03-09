@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:mili/widgets/devops_my_jars.dart';
+import 'package:mili/widgets/devops_boco_jars.dart';
 import 'package:mili/widgets/devops_open_jars.dart';
 import 'package:mili/widgets/home_footer.dart';
 import 'package:mili/widgets/home_navs.dart';
@@ -98,7 +98,7 @@ class _AppRootState extends State<AppRoot> {
               break;
             case '自研组件':
               _logger.d("loading jar console.");
-              navigatorChanged(navigator, const DevopsMyJars());
+              navigatorChanged(navigator, const DevopsBocoJars());
               break;
             case '安全管理':
               _logger.d("loading security console.");

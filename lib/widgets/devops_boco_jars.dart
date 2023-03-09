@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import '../utils/helper.dart';
 
-class DevopsMyJars extends StatefulWidget {
-  const DevopsMyJars({super.key});
+class DevopsBocoJars extends StatefulWidget {
+  const DevopsBocoJars({super.key});
 
   @override
-  State<DevopsMyJars> createState() => _DevopsMyJarsState();
+  State<DevopsBocoJars> createState() => _DevopsBocoJarsState();
 }
 
-class _DevopsMyJarsState extends State<DevopsMyJars> {
+class _DevopsBocoJarsState extends State<DevopsBocoJars> {
   var logger = Logger();
   final Helper _helper = Helper();
 
