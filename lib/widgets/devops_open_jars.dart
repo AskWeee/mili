@@ -31,7 +31,6 @@ class _DevopsOpenJarsState extends State<DevopsOpenJars> {
           child: Container(
             alignment: Alignment.topLeft,
             color: const Color.fromRGBO(75, 75, 75, 1),
-            width: 60,
             child: Wrap(
               children: [
                 TextButton(onPressed: _onPressedA, child: const Text('CAMP')),
@@ -42,7 +41,6 @@ class _DevopsOpenJarsState extends State<DevopsOpenJars> {
           ),
         ),
         Container(
-          width: 60,
           alignment: Alignment.topLeft,
           color: const Color.fromRGBO(75, 75, 75, 1),
           child: Wrap(
