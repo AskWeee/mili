@@ -5,7 +5,6 @@ import 'package:mili/widgets/devops_open_jars.dart';
 import 'package:mili/widgets/home_footer.dart';
 import 'package:mili/widgets/home_navs.dart';
 import 'devops_products.dart';
-import 'devops_campboot.dart';
 import '../utils/events.dart';
 
 class AppRoot extends StatefulWidget {
@@ -33,8 +32,8 @@ class _AppRootState extends State<AppRoot> {
   // LR layout
   Row _layoutWorkspace() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      mainAxisSize: MainAxisSize.max,
+      // mainAxisAlignment: MainAxisAlignment.start,
+      // mainAxisSize: MainAxisSize.max,
       children: <Widget>[
         Container(
           alignment: Alignment.topLeft,
@@ -42,25 +41,33 @@ class _AppRootState extends State<AppRoot> {
           child: const HomeNavs(),
         ),
         Expanded(
-            flex: 1,
-            child: Container(
+          flex: 1,
+          child: Container(
               alignment: Alignment.topLeft,
               padding: const EdgeInsets.all(10),
               color: const Color.fromRGBO(49, 49, 49, 1),
-              foregroundDecoration: BoxDecoration(
-                  border: Border.all(
-                color: const Color.fromRGBO(61, 61, 61, 1),
-                width: 1.0,
+              child: Column(
+                children: [
+                  Container(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      '开发平台 > $_navigaotr',
+                      style: const TextStyle(
+                          color: Color.fromRGBO(255, 255, 255, 1),
+                          decoration: TextDecoration.none,
+                          fontSize: 16),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: _navigatorClient,
+                  )
+                ],
               )),
-              child: Column(children: [
-                SizedBox(
-                  height: 50,
-                  child: Text(_navigaotr),
-                ),
-                Expanded(child: _navigatorClient)
-              ]),
-              // child: const DevopsCampboot(),
-            )),
+        ),
       ],
     );
   }
@@ -70,12 +77,7 @@ class _AppRootState extends State<AppRoot> {
     return Column(
       children: <Widget>[
         Expanded(flex: 1, child: _layoutWorkspace()),
-        Container(
-            height: 30,
-            decoration: const BoxDecoration(
-              color: Colors.redAccent,
-            ),
-            child: const HomeFooter()),
+        const SizedBox(height: 30, child: HomeFooter()),
       ],
     );
   }

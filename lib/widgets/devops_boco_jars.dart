@@ -30,8 +30,7 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
           flex: 1,
           child: Container(
             alignment: Alignment.topLeft,
-            color: const Color.fromRGBO(75, 75, 75, 1),
-            width: 60,
+            color: const Color.fromRGBO(125, 125, 125, 1),
             child: Wrap(
               children: [
                 TextButton(onPressed: _onPressedA, child: const Text('CAMP')),
@@ -42,9 +41,9 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
           ),
         ),
         Container(
-          width: 60,
           alignment: Alignment.topLeft,
-          color: const Color.fromRGBO(255, 75, 75, 1),
+          color: const Color.fromRGBO(175, 175, 175, 1),
+          height: 100,
           child: Wrap(
             children: [
               TextButton(onPressed: _onPressedA, child: const Text('User')),
