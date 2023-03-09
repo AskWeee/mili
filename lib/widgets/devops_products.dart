@@ -18,16 +18,6 @@ class _DevopsProductsState extends State<DevopsProducts> {
     _helper.testDirectoryCreate();
   }
 
-  void _onPressedA() {
-    _helper.testDirectoryCreate();
-  }
-
-  void _onPressedB() {
-    _helper.testHttpGet().then((value) {
-      logger.d(value);
-    });
-  }
-
   Stack _layoutMain() {
     return Stack(children: <Widget>[
       Container(
@@ -36,15 +26,7 @@ class _DevopsProductsState extends State<DevopsProducts> {
       ),
       Container(
         alignment: Alignment.topLeft,
-        child: Wrap(direction: Axis.vertical, children: [
-          const Text(
-            "开发平台 > 产品管理",
-            style: TextStyle(
-              color: Color.fromRGBO(255, 255, 255, 1),
-              fontSize: 16,
-              decoration: TextDecoration.none,
-            ),
-          ),
+        child: Column(children: [
           Wrap(
             spacing: 5,
             children: [
@@ -69,6 +51,11 @@ class _DevopsProductsState extends State<DevopsProducts> {
               ),
             ],
           ),
+          Expanded(
+              child: Container(
+            alignment: Alignment.topLeft,
+            color: const Color.fromRGBO(255, 255, 255, 1),
+          ))
         ]),
       ),
     ]);
