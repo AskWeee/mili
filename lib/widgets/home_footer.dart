@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import '../utils/helper.dart';
 
 class HomeFooter extends StatefulWidget {
   const HomeFooter({super.key});
@@ -11,19 +10,8 @@ class HomeFooter extends StatefulWidget {
 
 class _HomeFooterState extends State<HomeFooter> {
   var logger = Logger();
-  final Helper _helper = Helper();
 
   final _colorMainBackground = const Color.fromRGBO(0, 122, 204, 1);
-
-  void _onPressedA() {
-    _helper.testDirectoryCreate();
-  }
-
-  void _onPressedB() {
-    _helper.testHttpGet().then((value) {
-      logger.d(value);
-    });
-  }
 
   Stack _layoutMain() {
     return Stack(children: [
@@ -44,7 +32,7 @@ class _HomeFooterState extends State<HomeFooter> {
               child: Wrap(
                 children: [
                   TextButton(
-                      onPressed: _onPressedA,
+                      onPressed: () {},
                       child: const Text(
                         '系统提示：',
                         style: TextStyle(color: Colors.white),

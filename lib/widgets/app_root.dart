@@ -22,7 +22,7 @@ class AppRoot extends StatefulWidget {
 
 class _AppRootState extends State<AppRoot> {
   final _logger = Logger();
-  String _navigaotr = 'hello world';
+  String _navigaotr = '欢迎使用';
   Widget _navigatorClient = Container();
 
   void navigatorChanged(String navigator, Widget navigatorClient) {
@@ -56,10 +56,7 @@ class _AppRootState extends State<AppRoot> {
                     alignment: Alignment.topLeft,
                     child: Text(
                       '开发平台 > $_navigaotr',
-                      style: const TextStyle(
-                          color: Color.fromRGBO(255, 255, 255, 1),
-                          decoration: TextDecoration.none,
-                          fontSize: 16),
+                      style: const TextStyle(color: Color.fromRGBO(255, 255, 255, 1), decoration: TextDecoration.none, fontSize: 16),
                     ),
                   ),
                   const SizedBox(
@@ -80,7 +77,7 @@ class _AppRootState extends State<AppRoot> {
   Column _layoutMain() {
     return Column(
       children: <Widget>[
-        Expanded(flex: 1, child: _layoutWorkspace()),
+        DefaultTextStyle(style: const TextStyle(fontSize: 16, color: Color.fromRGBO(255, 255, 255, 1)), child: Expanded(flex: 1, child: _layoutWorkspace())),
         const SizedBox(height: 30, child: HomeFooter()),
       ],
     );

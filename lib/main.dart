@@ -1,8 +1,15 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:mili/widgets/app_root.dart';
 
 void main() {
   runApp(const MyApp());
+}
+
+class MyCustomScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => {PointerDeviceKind.touch, PointerDeviceKind.mouse};
 }
 
 class MyApp extends StatelessWidget {
@@ -17,6 +24,8 @@ class MyApp extends StatelessWidget {
         fontFamily: 'NotoSansSC',
       ),
       home: const AppRoot(title: 'Hello World'),
+      debugShowCheckedModeBanner: false,
+      scrollBehavior: MyCustomScrollBehavior(),
     );
   }
 }
