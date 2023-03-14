@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
       ),
       home: const AppRoot(title: 'Hello World'),
       debugShowCheckedModeBanner: false,
-      scrollBehavior: MyCustomScrollBehavior(),
+      // scrollBehavior: MyCustomScrollBehavior(),
     );
   }
 }
