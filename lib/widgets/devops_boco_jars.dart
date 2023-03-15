@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter_treeview/flutter_treeview.dart';
+import 'package:mili/utils/helper.dart';
+import 'package:intl/intl.dart';
 
 class DevopsBocoJars extends StatefulWidget {
   const DevopsBocoJars({super.key});
@@ -11,11 +13,14 @@ class DevopsBocoJars extends StatefulWidget {
 }
 
 class _DevopsBocoJarsState extends State<DevopsBocoJars> {
-  var _key = GlobalKey();
-  Size? _redboxSize;
   bool isChanging = false;
 
   final _logger = Logger();
+  final _helper = Helper();
+
+  String versionsSelected = '1.0.1';
+  String developerSelected = 'gaoyanfu';
+  String statusSelected = 'deploy';
 
   final Color _colorBorderBoxRoot = const Color.fromRGBO(0, 122, 204, 1);
   final Color _colorBackgroundToolbar = const Color.fromRGBO(61, 61, 61, 1);
@@ -33,6 +38,8 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
 
   final ScrollController scrollControllerTable = ScrollController();
   final ScrollController scrollControllerDataTable = ScrollController();
+
+  List _listBocoJars = [];
 
   Slider mySlider = Slider(
       value: 1,
@@ -178,7 +185,7 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
             label: const Text(
               '刷新',
             ),
-            onPressed: () {},
+            onPressed: onButtonPressedRefresh,
           ),
           const SizedBox(
             width: 10,
@@ -280,9 +287,9 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
       margin: const EdgeInsets.all(10),
       color: const Color.fromRGBO(155, 155, 155, 1),
       child: Scrollbar(
-        thumbVisibility: true,
-        trackVisibility: true,
-        interactive: true,
+        // thumbVisibility: true,
+        // trackVisibility: true,
+        // interactive: true,
         controller: scrollControllerDataTable,
         child: SingleChildScrollView(
           controller: scrollControllerDataTable,
@@ -309,8 +316,8 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
                 decoration: BoxDecoration(border: Border.all(color: _colorBorderBoxRoot, width: 1)),
                 child: TabBarView(
                   children: [
-                    getWidgetJarsTable(),
-                    // getWidgetJarsDataTable(),
+                    // getWidgetJarsTable(),
+                    getWidgetJarsDataTable(),
                     getWidgetJarsTree(),
                   ],
                 )),
@@ -361,10 +368,11 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
 
   Container getWidgetJarInfoLocation() {
     return Container(
-        alignment: Alignment.topLeft,
-        padding: const EdgeInsets.all(10),
-        color: _colorBackgroundTabBarView,
-        child: Table(
+      alignment: Alignment.topLeft,
+      padding: const EdgeInsets.all(10),
+      color: _colorBackgroundTabBarView,
+      child: Column(children: [
+        Table(
           border: TableBorder.all(),
           columnWidths: const <int, TableColumnWidth>{
             1: FlexColumnWidth(),
@@ -376,11 +384,11 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
               children: <Widget>[
                 TableCell(
                   verticalAlignment: TableCellVerticalAlignment.top,
-                  child: Text('组标识（GroupID）'),
+                  child: Text('组标识： GroupID'),
                 ),
                 TableCell(
                   verticalAlignment: TableCellVerticalAlignment.top,
-                  child: Text('组名称'),
+                  child: Text('归属及分类：'),
                 ),
               ],
             ),
@@ -412,11 +420,11 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
               children: <Widget>[
                 TableCell(
                   verticalAlignment: TableCellVerticalAlignment.top,
-                  child: Text('制品标识（ArtifactID）'),
+                  child: Text('制品标识： ArtifactID'),
                 ),
                 TableCell(
                   verticalAlignment: TableCellVerticalAlignment.top,
-                  child: Text('制品名称'),
+                  child: Text('制品名称：'),
                 ),
               ],
             ),
@@ -442,42 +450,107 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
                 ),
               ],
             ),
-            const TableRow(
-              children: <Widget>[
-                TableCell(
-                  verticalAlignment: TableCellVerticalAlignment.top,
-                  child: Text('版本'),
-                ),
-                TableCell(
-                  verticalAlignment: TableCellVerticalAlignment.top,
-                  child: Text('责任人'),
-                ),
-              ],
-            ),
-            TableRow(
-              children: <Widget>[
-                TableCell(
-                  // verticalAlignment: TableCellVerticalAlignment.top,
-                  child: Container(
-                    alignment: Alignment.topLeft,
-                    child: Card(
-                      child: TextField(controller: _textControllerJarVersion),
-                    ),
-                  ),
-                ),
-                TableCell(
-                  // verticalAlignment: TableCellVerticalAlignment.top,
-                  child: Container(
-                    alignment: Alignment.topLeft,
-                    child: Card(
-                      child: TextField(controller: _textControllerJarManager),
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ],
-        ));
+        ),
+        Container(
+          alignment: Alignment.topLeft,
+          child: Row(children: [
+            const Expanded(
+              child: Text('制品版本： Version'),
+            ),
+            Expanded(
+              child: Row(children: const [
+                Expanded(
+                  child: Text('版本状态：'),
+                ),
+                Expanded(
+                  child: Text('责任人：'),
+                ),
+              ]),
+            ),
+          ]),
+        ),
+        Container(
+          alignment: Alignment.topLeft,
+          child: Row(children: [
+            Expanded(
+              child: Card(
+                child: DropdownButton(
+                    isExpanded: true,
+                    value: versionsSelected,
+                    items: const [
+                      DropdownMenuItem(
+                        value: '1.0.0',
+                        child: Text('1.0.0'),
+                      ),
+                      DropdownMenuItem(
+                        value: '1.0.1',
+                        child: Text('1.0.1'),
+                      )
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        versionsSelected = value!;
+                      });
+                    }),
+              ),
+            ),
+            Expanded(
+              child: Row(children: [
+                Expanded(
+                  child: Card(
+                    child: DropdownButton(
+                        isExpanded: true,
+                        value: developerSelected,
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'gaoyanfu',
+                            child: Text('高彦夫'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'dingxiaohai',
+                            child: Text('丁小孩'),
+                          )
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            developerSelected = value!;
+                          });
+                        }),
+                  ),
+                ),
+                Expanded(
+                  child: Card(
+                    child: DropdownButton(
+                        isExpanded: true,
+                        value: statusSelected,
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'plan',
+                            child: Text('规划中'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'dev',
+                            child: Text('开发中'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'deploy',
+                            child: Text('已发布'),
+                          )
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            statusSelected = value!;
+                          });
+                        }),
+                  ),
+                ),
+              ]),
+            ),
+          ]),
+        ),
+      ]),
+    );
   }
 
   Container getWidgetJarInfo() {
@@ -604,46 +677,26 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
           6: FixedColumnWidth(200),
         },
         defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-        children: _renderList(),
-        // children: <TableRow>[
-
-        //   _renderList().map((e) => e;),
-        // ],
+        children: _makeBocoJarsTableRowList(_listBocoJars),
       ),
     );
   }
 
   DataTable makeJarsDataTable() {
-    int rowsCount = 100;
-    int columnsCount = 30;
+    List<DataColumn> columns = [];
+    columns.add(const DataColumn(label: Text('序号')));
+    columns.add(const DataColumn(label: Text('归属')));
+    columns.add(const DataColumn(label: Text('归属标识')));
+    columns.add(const DataColumn(label: Text('分组')));
+    columns.add(const DataColumn(label: Text('分组标识')));
+    columns.add(const DataColumn(label: Text('制品')));
+    columns.add(const DataColumn(label: Text('制品标识')));
 
-    List<DataColumn> columns() {
-      List<DataColumn> column = [];
+    return DataTable(columns: columns, rows: _makeBocoJarsDataRowList(_listBocoJars));
+  }
 
-      for (var i = 0; i < columnsCount; i++) {
-        column.add(DataColumn(label: Text('列标题$i')));
-      }
-      return column;
-    }
-
-    List<DataCell> cells() {
-      List<DataCell> cells = [];
-      for (var i = 0; i < columnsCount; i++) {
-        cells.add(DataCell(Text('$i')));
-      }
-      return cells;
-    }
-
-    List<DataRow> rows() {
-      //行
-      List<DataRow> rows = [];
-      for (var i = 0; i < rowsCount; i++) {
-        rows.add(DataRow(cells: cells()));
-      }
-      return rows;
-    }
-
-    return DataTable(columns: columns(), rows: rows());
+  void onButtonPressedRefresh() {
+    getBocoJars();
   }
 
   void onButtonPressedRebuildDependencies() async {
@@ -663,9 +716,10 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
 
     if (isConfirmed != null) {
       if (isConfirmed) {
-        _logger.d("重建依赖关系");
+        _logger.d("add boco jar");
+        addBocoJar();
       } else {
-        _logger.d("放弃操作");
+        _logger.d("放弃 add boco jar 操作");
       }
     }
   }
@@ -675,9 +729,10 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
 
     if (isConfirmed != null) {
       if (isConfirmed) {
-        _logger.d("重建依赖关系");
+        _logger.d("add boco jar limited with version");
+        addBocoJarVersion();
       } else {
-        _logger.d("放弃操作");
+        _logger.d("放弃 add boco jar limited with version 操作");
       }
     }
   }
@@ -750,8 +805,7 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
     );
   }
 
-  List<TableRow> _renderList() {
-    List titleList = ['aa', 'bb', 'cc', 'dd', 'ee', 'ff', 'gg', 'hh', 'ii', 'jj', 'kk', 'll', 'mm', 'nn', 'oo', 'pp', 'qq', 'rr', 'ss', 'tt'];
+  List<TableRow> _makeBocoJarsTableRowList(List inData) {
     List<TableRow> list = [];
 
     var tableHeader = const TableRow(
@@ -803,39 +857,67 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
 
     list.add(tableHeader);
 
-    for (var i = 0; i < titleList.length; i++) {
+    for (var i = 0; i < inData.length; i++) {
       list.add(TableRow(children: [
         Container(
           padding: const EdgeInsets.all(12),
-          child: Text(titleList[i]),
+          child: Text(i.toString()),
         ),
         Container(
           padding: const EdgeInsets.all(12),
-          child: Text(titleList[i] * 2),
+          child: Text(inData[1]),
         ),
         Container(
           padding: const EdgeInsets.all(12),
-          child: Text(titleList[i] * 3),
+          child: Text(inData[2]),
         ),
         Container(
           padding: const EdgeInsets.all(12),
-          child: Text(titleList[i] * 4),
+          child: Text(inData[3]),
         ),
         Container(
           padding: const EdgeInsets.all(12),
-          child: Text(titleList[i] * 5),
+          child: Text(inData[4]),
         ),
         Container(
           padding: const EdgeInsets.all(12),
-          child: Text(titleList[i] * 6),
+          child: Text(inData[5]),
         ),
         Container(
           padding: const EdgeInsets.all(12),
-          child: Text(titleList[i] * 7),
+          child: Text(inData[6]),
         ),
       ]));
     }
     return list;
+  }
+
+  List<DataRow> _makeBocoJarsDataRowList(List inData) {
+    List<DataRow> myResult = [];
+
+    if (inData.isEmpty) {
+      List<DataCell> cells = [];
+
+      for (var i = 0; i < 7; i++) {
+        cells.add(const DataCell(Text('')));
+      }
+
+      myResult.add(DataRow(cells: cells));
+    } else {
+      for (var i = 0; i < inData.length * 50; i++) {
+        List<DataCell> cells = [];
+
+        var f = NumberFormat("0000");
+        cells.add(DataCell(Text(f.format(i + 1))));
+        for (var j = 1; j < inData[i % inData.length].length; j++) {
+          cells.add(DataCell(Text('${inData[i % inData.length][j]}')));
+        }
+
+        myResult.add(DataRow(cells: cells));
+      }
+    }
+
+    return myResult;
   }
 
   void setJarInfoLocation(String groupId, String groupTitle, String artifactId, String artifactTitle, String version, String manager) {
@@ -860,6 +942,8 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
     // Key('SliderTableScrollBar')
     //mySlider.max = metrics
 
+    // mySlider.onChanged = null;
+
     setState(() {
       isChanging = true;
       _sliderTableScrollbarValueCurrent = 0;
@@ -870,21 +954,54 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
     return true;
   }
 
-  bool _handleKSizeChangedNotification(KSizeChangedNotification notification) {
-    _logger.d('... ${notification.size} ...');
-    return true;
-  }
+  // bool _handleKSizeChangedNotification(KSizeChangedNotification notification) {
+  //   _logger.d('... ${notification.size} ...');
+  //   return true;
+  // }
 
   Size getRedBoxSize(BuildContext context) {
     final box = context.findRenderObject() as RenderBox;
     return box.size;
   }
 
+  void getBocoJars() {
+    _helper.getBocoJars().then((List value) {
+      _logger.d('get boco jars >>>${value.length}<<<');
+
+      setState(() {
+        _listBocoJars = value;
+      });
+
+      // scrollControllerTable.jumpTo(1);
+      // scrollControllerTable.jumpTo(0);
+    });
+  }
+
+  void addBocoJar() {
+    List newListBocoJars = [
+      [1, 'a', 'a', 'a', 'a', 'a', 'a']
+    ];
+
+    setState(() {
+      _listBocoJars = newListBocoJars;
+    });
+  }
+
+  void addBocoJarVersion() {
+    List newListBocoJars = [
+      [1, 'b', 'b', 'b', 'b', 'b', 'b']
+    ];
+
+    setState(() {
+      _listBocoJars = newListBocoJars;
+    });
+  }
+
   @override
   void didUpdateWidget(covariant DevopsBocoJars oldWidget) {
-    // TODO: implement didUpdateWidget
-    super.didUpdateWidget(oldWidget);
     _logger.d('.................');
+
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -892,14 +1009,10 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
     setJarInfoLocation('com.boco.alarms.common', '亿阳信通-故障管理-通用', 'alarm-common-monitor', '告警流水', '1.0.0-20020202', '高彦夫');
     setJarInfoLocationXml("<dependency>...</dependency>");
 
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      // _logger.d('>>> ${getRedBoxSize(_key.currentContext!)}');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _logger.d('WidgetsBinding.instance.addPostFrameCallback');
 
-      // setState(() {
-      //   _redboxSize = getRedBoxSize(_key.currentContext!);
-      // });
-      scrollControllerTable.jumpTo(1);
-      scrollControllerTable.jumpTo(0);
+      getBocoJars();
     });
 
     super.initState();
@@ -915,10 +1028,28 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
 class DialogAddBocoJar extends Dialog {
   DialogAddBocoJar({super.key});
 
-  int groupIdSelected = 1;
-  int versionSelected = 1;
+  String companyProductIdSelected = '';
+  String groupIdSelected = '';
+  String versionsSelected = '';
+  String statusSelected = '';
+  String checkResultSelected = '';
+
+  bool _isArtifactIdChecked = false;
 
   final TextEditingController _textControllerArtifactId = TextEditingController();
+  final TextEditingController _textControllerArtifactTitle = TextEditingController();
+  final TextEditingController _textControllerVersion = TextEditingController();
+  final TextEditingController _textControllerMemo = TextEditingController();
+  final TextEditingController _textControllerDependency = TextEditingController();
+  final TextEditingController _textControllerDeveloper = TextEditingController();
+
+  final _colorMask = const Color.fromRGBO(0, 0, 0, 0.2);
+  final _colorDialog = const Color.fromRGBO(255, 255, 255, 1);
+  final _colorTitleBar = const Color.fromRGBO(0, 55, 175, 1);
+  final _colorTitleBarBorder = const Color.fromRGBO(215, 215, 215, 1);
+  final _colorTitle = const Color.fromRGBO(255, 255, 255, 1);
+  final _colorContent = const Color.fromRGBO(215, 215, 215, 1);
+  final _colorContentBorder = const Color.fromRGBO(215, 215, 215, 1);
 
   @override
   Widget build(BuildContext context) {
@@ -927,54 +1058,94 @@ class DialogAddBocoJar extends Dialog {
           type: MaterialType.transparency,
           child: Container(
             alignment: Alignment.center,
-            color: const Color.fromRGBO(0, 0, 0, 0.2),
+            color: _colorMask,
             child: Container(
               alignment: Alignment.center,
               width: 800,
               height: 600,
-              color: const Color.fromRGBO(0, 49, 222, 1),
+              color: _colorDialog,
               child: Column(children: [
                 Container(
                   alignment: Alignment.center,
                   height: 40,
-                  decoration: BoxDecoration(color: const Color.fromRGBO(75, 75, 75, 1), border: Border.all(color: const Color.fromRGBO(75, 75, 75, 1), width: 1)),
-                  child: const Text(
+                  decoration: BoxDecoration(color: _colorTitleBar, border: Border.all(color: _colorTitleBarBorder, width: 1)),
+                  child: Text(
                     '新增自研组件',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                    style: TextStyle(color: _colorTitle, fontSize: 16),
                   ),
                 ),
                 Expanded(
                   child: Container(
                     alignment: Alignment.topLeft,
-                    decoration: BoxDecoration(color: const Color.fromRGBO(215, 215, 215, 1), border: Border.all(color: const Color.fromRGBO(215, 215, 215, 1), width: 1)),
+                    decoration: BoxDecoration(color: _colorContent, border: Border.all(color: _colorContentBorder, width: 1)),
                     child: Column(children: [
                       Expanded(
                         child: Container(
                           alignment: Alignment.topLeft,
                           margin: const EdgeInsets.all(10),
-                          color: const Color.fromRGBO(215, 215, 215, 1),
+                          color: _colorContent,
                           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                             const Text(
-                              '组件类别标识（GroupID）：',
+                              '归属： com.boco.{产品标识}',
                             ),
+                            //SizedBox(
+                            //width: 490,
+                            //child:
+                            DropdownButton(
+                                isExpanded: true,
+                                value: companyProductIdSelected,
+                                items: const [
+                                  DropdownMenuItem(
+                                    value: '',
+                                    child: Text('请选择'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'com.boco.alarms',
+                                    child: Text('亿阳信通故障管理'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'com.boco.trans',
+                                    child: Text('亿阳信通传输网管'),
+                                  )
+                                ],
+                                onChanged: (value) {
+                                  setState(() {
+                                    companyProductIdSelected = value!;
+                                  });
+                                }),
+                            //),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            const Text(
+                              '分组： GroupID = com.boco.{产品标识}.{分组标识}',
+                            ),
+                            //SizedBox(
+                            //width: 490,
+                            //child:
                             DropdownButton(
                                 isExpanded: true,
                                 value: groupIdSelected,
                                 items: const [
                                   DropdownMenuItem(
-                                    value: 1,
-                                    child: Text('亿阳信通故障管理-通用组件'),
+                                    value: '',
+                                    child: Text('请选择'),
                                   ),
                                   DropdownMenuItem(
-                                    value: 2,
-                                    child: Text('亿阳信通故障管理-集中配置'),
+                                    value: 'common',
+                                    child: Text('通用组件'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'ucmp',
+                                    child: Text('集中配置'),
                                   )
                                 ],
                                 onChanged: (value) {
                                   setState(() {
-                                    groupIdSelected = value as int;
+                                    groupIdSelected = value!;
                                   });
                                 }),
+                            //),
                             const SizedBox(
                               height: 10,
                             ),
@@ -983,7 +1154,7 @@ class DialogAddBocoJar extends Dialog {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text('组件标识（ArtifactID）：'),
+                                    const Text('制品标识： ArtifactID'),
                                     Card(
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(5.0),
@@ -998,6 +1169,220 @@ class DialogAddBocoJar extends Dialog {
                                   ],
                                 ),
                               ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(children: [
+                                      const Expanded(
+                                        child: Text('制品名称：'),
+                                      ),
+                                      !_isArtifactIdChecked
+                                          ? const SizedBox(
+                                              width: 10,
+                                            )
+                                          : Row(children: const [
+                                              Checkbox(value: false, onChanged: null),
+                                              Text('使用旧制品名称'),
+                                            ]),
+                                    ]),
+                                    Card(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5.0),
+                                      ),
+                                      child: TextField(
+                                        controller: _textControllerArtifactTitle,
+                                        decoration: const InputDecoration(
+                                          hintText: '请输入关键字',
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ]),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Row(children: [
+                              Expanded(
+                                flex: 2,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text('组件版本： Version'),
+                                    Card(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5.0),
+                                      ),
+                                      child: TextField(
+                                        controller: _textControllerVersion,
+                                        decoration: const InputDecoration(
+                                          hintText: '请输入关键字',
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text('版本状态：'),
+                                    DropdownButton(
+                                        isExpanded: true,
+                                        value: statusSelected,
+                                        items: const [
+                                          DropdownMenuItem(
+                                            value: '',
+                                            child: Text('请选择'),
+                                          ),
+                                          DropdownMenuItem(
+                                            value: 'design',
+                                            child: Text('规划中'),
+                                          ),
+                                          DropdownMenuItem(
+                                            value: 'dev',
+                                            child: Text('开发中'),
+                                          ),
+                                          DropdownMenuItem(
+                                            value: 'deploy',
+                                            child: Text('已发布'),
+                                          ),
+                                        ],
+                                        onChanged: (value) {
+                                          setState(() {
+                                            statusSelected = value!;
+                                          });
+                                        }),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text('责任人：'),
+                                    Card(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5.0),
+                                      ),
+                                      child: TextField(
+                                        controller: _textControllerDeveloper,
+                                        decoration: const InputDecoration(
+                                          hintText: '请输入关键字',
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ]),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Row(children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text('备注：'),
+                                    Card(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5.0),
+                                      ),
+                                      child: TextField(
+                                        controller: _textControllerMemo,
+                                        decoration: const InputDecoration(
+                                          hintText: '请输入关键字',
+                                        ),
+                                        maxLines: 5,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text('坐标：'),
+                                    Card(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5.0),
+                                      ),
+                                      child: TextField(
+                                        controller: _textControllerDependency,
+                                        decoration: const InputDecoration(
+                                          hintText: '请输入关键字',
+                                        ),
+                                        maxLines: 5,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ]),
+                          ]),
+                        ),
+                      ),
+                      Row(children: [
+                        const Spacer(),
+                        ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                _isArtifactIdChecked = !_isArtifactIdChecked;
+                              });
+                            },
+                            child: const Text('校验')),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(true);
+                            },
+                            child: const Text('保存')),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(false);
+                            },
+                            child: const Text('放弃')),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                      ]),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                    ]),
+                  ),
+                ),
+              ]),
+            ),
+          ));
+    });
+  }
+
+  /*
                               const SizedBox(
                                 width: 10,
                               ),
@@ -1011,117 +1396,53 @@ class DialogAddBocoJar extends Dialog {
                               const SizedBox(
                                 width: 10,
                               ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text('历史版本：'),
-                                    DropdownButton(
-                                        isExpanded: true,
-                                        value: versionSelected,
-                                        items: const [
-                                          DropdownMenuItem(
-                                            value: 1,
-                                            child: Text('1.0.1'),
-                                          ),
-                                          DropdownMenuItem(
-                                            value: 2,
-                                            child: Text('1.1.0'),
-                                          )
-                                        ],
-                                        onChanged: (value) {
-                                          setState(() {
-                                            versionSelected = value as int;
-                                          });
-                                        }),
-                                  ],
-                                ),
-                              ),
-                            ]),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Row(children: [
-                              Expanded(
-                                flex: 2,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text('组件版本（Version）：'),
-                                    Card(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(5.0),
+                              !_isArtifactIdChecked
+                                  ? const SizedBox(
+                                      width: 300,
+                                    )
+                                  : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                      const Text('制品名称不同，但制品ID相同，版本列表如下：'),
+                                      Container(
+                                        alignment: Alignment.topLeft,
+                                        // color: Colors.red,
+                                        //child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                                        //const Text('版本：'),
+                                        //Container(
+                                        //alignment: Alignment.topLeft,
+                                        width: 300,
+                                        child:
+                                            //     const Text(''),
+                                            DropdownButton(
+                                                isExpanded: true,
+                                                value: versionsSelected,
+                                                items: const [
+                                                  DropdownMenuItem(
+                                                    value: '',
+                                                    child: Text('待查'),
+                                                  ),
+                                                  DropdownMenuItem(
+                                                    value: '1.0.1',
+                                                    child: Text('1.0.1'),
+                                                  ),
+                                                  DropdownMenuItem(
+                                                    value: '1.1.0',
+                                                    child: Text('1.1.0'),
+                                                  )
+                                                ],
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    versionsSelected = value!;
+                                                  });
+                                                }),
+                                        //),
+                                        //   ]),
+                                        // ),
+                                        //]),
                                       ),
-                                      child: TextField(
-                                        controller: _textControllerArtifactId,
-                                        decoration: const InputDecoration(
-                                          hintText: '请输入关键字',
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Expanded(
-                                flex: 1,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text('版本状态：'),
-                                    DropdownButton(
-                                        isExpanded: true,
-                                        value: versionSelected,
-                                        items: const [
-                                          DropdownMenuItem(
-                                            value: 1,
-                                            child: Text('未知'),
-                                          ),
-                                          DropdownMenuItem(
-                                            value: 2,
-                                            child: Text('带上传'),
-                                          )
-                                        ],
-                                        onChanged: (value) {
-                                          setState(() {
-                                            versionSelected = value as int;
-                                          });
-                                        }),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Expanded(
-                                flex: 1,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text('定位状态：'),
-                                    DropdownButton(
-                                        isExpanded: true,
-                                        value: versionSelected,
-                                        items: const [
-                                          DropdownMenuItem(
-                                            value: 1,
-                                            child: Text('成功'),
-                                          ),
-                                          DropdownMenuItem(
-                                            value: 2,
-                                            child: Text('失败'),
-                                          )
-                                        ],
-                                        onChanged: (value) {
-                                          setState(() {
-                                            versionSelected = value as int;
-                                          });
-                                        }),
-                                  ],
-                                ),
-                              ),
+                                    ]),
+
+
+
                               const SizedBox(
                                 width: 10,
                               ),
@@ -1129,101 +1450,56 @@ class DialogAddBocoJar extends Dialog {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const Text(''),
-                                  ElevatedButton(onPressed: () {}, child: const Text('定位')),
+                                  ElevatedButton(onPressed: () {}, child: const Text('校验')),
                                 ],
-                              ),
-                            ]),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Row(children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text('完整坐标（XML）：'),
-                                    Card(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(5.0),
-                                      ),
-                                      child: TextField(
-                                        controller: _textControllerArtifactId,
-                                        decoration: const InputDecoration(
-                                          hintText: '请输入关键字',
-                                        ),
-                                        maxLines: 5,
-                                      ),
-                                    ),
-                                  ],
-                                ),
                               ),
                               const SizedBox(
                                 width: 10,
                               ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text('组件备注：'),
-                                    Card(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(5.0),
-                                      ),
-                                      child: TextField(
-                                        controller: _textControllerArtifactId,
-                                        decoration: const InputDecoration(
-                                          hintText: '请输入关键字',
-                                        ),
-                                        maxLines: 5,
+                              !_isStatusChecked
+                                  ? const SizedBox(
+                                      width: 300,
+                                    )
+                                  : Expanded(
+                                      flex: 1,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: const [
+                                          Text(''),
+                                          Text('校验结果：'),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ),
-                            ]),
-                          ]),
-                        ),
-                      ),
-                      Row(children: [
-                        const Spacer(),
-                        ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).pop(true);
-                            },
-                            child: const Text('确定')),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).pop(false);
-                            },
-                            child: const Text('关闭')),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                      ]),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                    ]),
-                  ),
-                ),
-              ]),
-            ),
-          ));
-    });
-  }
+
+  */
 }
 
 //ignore: must_be_immutable
 class DialogAddBocoJarVersion extends Dialog {
   DialogAddBocoJarVersion({super.key});
 
-  int groupIdSelected = 1;
-  int versionSelected = 1;
+  String companyProductIdSelected = '';
+  String groupIdSelected = '';
+  String versionsSelected = '1.0.1';
+  String statusSelected = '';
+  String checkResultSelected = '';
+
+  bool _isArtifactIdChecked = false;
 
   final TextEditingController _textControllerArtifactId = TextEditingController();
+  final TextEditingController _textControllerArtifactTitle = TextEditingController();
+  final TextEditingController _textControllerVersion = TextEditingController();
+  final TextEditingController _textControllerMemo = TextEditingController();
+  final TextEditingController _textControllerDependency = TextEditingController();
+  final TextEditingController _textControllerDeveloper = TextEditingController();
+
+  final _colorMask = const Color.fromRGBO(0, 0, 0, 0.2);
+  final _colorDialog = const Color.fromRGBO(255, 255, 255, 1);
+  final _colorTitleBar = const Color.fromRGBO(0, 55, 175, 1);
+  final _colorTitleBarBorder = const Color.fromRGBO(215, 215, 215, 1);
+  final _colorTitle = const Color.fromRGBO(255, 255, 255, 1);
+  final _colorContent = const Color.fromRGBO(215, 215, 215, 1);
+  final _colorContentBorder = const Color.fromRGBO(215, 215, 215, 1);
 
   @override
   Widget build(BuildContext context) {
@@ -1232,45 +1508,94 @@ class DialogAddBocoJarVersion extends Dialog {
           type: MaterialType.transparency,
           child: Container(
             alignment: Alignment.center,
-            color: const Color.fromRGBO(0, 0, 0, 0.2),
+            color: _colorMask,
             child: Container(
               alignment: Alignment.center,
               width: 800,
               height: 600,
-              color: const Color.fromRGBO(0, 49, 222, 1),
+              color: _colorDialog,
               child: Column(children: [
                 Container(
                   alignment: Alignment.center,
                   height: 40,
-                  decoration: BoxDecoration(color: const Color.fromRGBO(75, 75, 75, 1), border: Border.all(color: const Color.fromRGBO(75, 75, 75, 1), width: 1)),
-                  child: const Text(
-                    '自研组件新增版本',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  decoration: BoxDecoration(color: _colorTitleBar, border: Border.all(color: _colorTitleBarBorder, width: 1)),
+                  child: Text(
+                    '新增自研组件版本',
+                    style: TextStyle(color: _colorTitle, fontSize: 16),
                   ),
                 ),
                 Expanded(
                   child: Container(
                     alignment: Alignment.topLeft,
-                    decoration: BoxDecoration(color: const Color.fromRGBO(215, 215, 215, 1), border: Border.all(color: const Color.fromRGBO(215, 215, 215, 1), width: 1)),
+                    decoration: BoxDecoration(color: _colorContent, border: Border.all(color: _colorContentBorder, width: 1)),
                     child: Column(children: [
                       Expanded(
                         child: Container(
                           alignment: Alignment.topLeft,
                           margin: const EdgeInsets.all(10),
-                          color: const Color.fromRGBO(215, 215, 215, 1),
+                          color: _colorContent,
                           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                             const Text(
-                              '组件类别标识（GroupID）：',
+                              '归属： com.boco.{产品标识}',
                             ),
-                            Card(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5.0),
-                              ),
-                              child: TextField(
-                                readOnly: true,
-                                controller: _textControllerArtifactId,
-                              ),
+                            //SizedBox(
+                            //width: 490,
+                            //child:
+                            DropdownButton(
+                                isExpanded: true,
+                                value: companyProductIdSelected,
+                                items: const [
+                                  DropdownMenuItem(
+                                    value: '',
+                                    child: Text('请选择'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'com.boco.alarms',
+                                    child: Text('亿阳信通故障管理'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'com.boco.trans',
+                                    child: Text('亿阳信通传输网管'),
+                                  )
+                                ],
+                                onChanged: (value) {
+                                  setState(() {
+                                    companyProductIdSelected = value!;
+                                  });
+                                }),
+                            //),
+                            const SizedBox(
+                              height: 10,
                             ),
+                            const Text(
+                              '分组： GroupID = com.boco.{产品标识}.{分组标识}',
+                            ),
+                            //SizedBox(
+                            //width: 490,
+                            //child:
+                            DropdownButton(
+                                isExpanded: true,
+                                value: groupIdSelected,
+                                items: const [
+                                  DropdownMenuItem(
+                                    value: '',
+                                    child: Text('请选择'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'common',
+                                    child: Text('通用组件'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'ucmp',
+                                    child: Text('集中配置'),
+                                  )
+                                ],
+                                onChanged: (value) {
+                                  setState(() {
+                                    groupIdSelected = value!;
+                                  });
+                                }),
+                            //),
                             const SizedBox(
                               height: 10,
                             ),
@@ -1279,14 +1604,16 @@ class DialogAddBocoJarVersion extends Dialog {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text('组件标识（ArtifactID）：'),
+                                    const Text('制品标识： ArtifactID'),
                                     Card(
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(5.0),
                                       ),
                                       child: TextField(
-                                        readOnly: true,
                                         controller: _textControllerArtifactId,
+                                        decoration: const InputDecoration(
+                                          hintText: '请输入关键字',
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -1299,25 +1626,52 @@ class DialogAddBocoJarVersion extends Dialog {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text('历史版本：'),
+                                    const Text('制品名称：'),
+                                    Card(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5.0),
+                                      ),
+                                      child: TextField(
+                                        controller: _textControllerArtifactTitle,
+                                        decoration: const InputDecoration(
+                                          hintText: '请输入关键字',
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text('版本列表：'),
                                     DropdownButton(
                                         isExpanded: true,
-                                        value: versionSelected,
+                                        value: versionsSelected,
                                         items: const [
                                           DropdownMenuItem(
-                                            value: 1,
+                                            value: '1.0.1',
                                             child: Text('1.0.1'),
                                           ),
                                           DropdownMenuItem(
-                                            value: 2,
+                                            value: '1.1.0',
                                             child: Text('1.1.0'),
                                           )
                                         ],
                                         onChanged: (value) {
                                           setState(() {
-                                            versionSelected = value as int;
+                                            versionsSelected = value!;
                                           });
                                         }),
+                                    //),
+                                    //   ]),
+                                    // ),
+                                    //]),
+                                    //),
                                   ],
                                 ),
                               ),
@@ -1327,19 +1681,19 @@ class DialogAddBocoJarVersion extends Dialog {
                             ),
                             Row(children: [
                               Expanded(
-                                flex: 2,
+                                flex: 1,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text('组件版本（Version）：'),
+                                    const Text('组件版本： Version'),
                                     Card(
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(5.0),
                                       ),
                                       child: TextField(
-                                        controller: _textControllerArtifactId,
+                                        controller: _textControllerVersion,
                                         decoration: const InputDecoration(
-                                          hintText: '请输入新的版本号',
+                                          hintText: '请输入关键字',
                                         ),
                                       ),
                                     ),
@@ -1357,20 +1711,28 @@ class DialogAddBocoJarVersion extends Dialog {
                                     const Text('版本状态：'),
                                     DropdownButton(
                                         isExpanded: true,
-                                        value: versionSelected,
+                                        value: statusSelected,
                                         items: const [
                                           DropdownMenuItem(
-                                            value: 1,
-                                            child: Text('未知'),
+                                            value: '',
+                                            child: Text('请选择'),
                                           ),
                                           DropdownMenuItem(
-                                            value: 2,
-                                            child: Text('带上传'),
-                                          )
+                                            value: 'design',
+                                            child: Text('规划中'),
+                                          ),
+                                          DropdownMenuItem(
+                                            value: 'dev',
+                                            child: Text('开发中'),
+                                          ),
+                                          DropdownMenuItem(
+                                            value: 'deploy',
+                                            child: Text('已发布'),
+                                          ),
                                         ],
                                         onChanged: (value) {
                                           setState(() {
-                                            versionSelected = value as int;
+                                            statusSelected = value!;
                                           });
                                         }),
                                   ],
@@ -1384,37 +1746,20 @@ class DialogAddBocoJarVersion extends Dialog {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text('定位状态：'),
-                                    DropdownButton(
-                                        isExpanded: true,
-                                        value: versionSelected,
-                                        items: const [
-                                          DropdownMenuItem(
-                                            value: 1,
-                                            child: Text('成功'),
-                                          ),
-                                          DropdownMenuItem(
-                                            value: 2,
-                                            child: Text('失败'),
-                                          )
-                                        ],
-                                        onChanged: (value) {
-                                          setState(() {
-                                            versionSelected = value as int;
-                                          });
-                                        }),
+                                    const Text('责任人：'),
+                                    Card(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5.0),
+                                      ),
+                                      child: TextField(
+                                        controller: _textControllerDeveloper,
+                                        decoration: const InputDecoration(
+                                          hintText: '请输入关键字',
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                 ),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(''),
-                                  ElevatedButton(onPressed: () {}, child: const Text('定位')),
-                                ],
                               ),
                             ]),
                             const SizedBox(
@@ -1425,13 +1770,13 @@ class DialogAddBocoJarVersion extends Dialog {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text('完整坐标（XML）：'),
+                                    const Text('备注：'),
                                     Card(
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(5.0),
                                       ),
                                       child: TextField(
-                                        controller: _textControllerArtifactId,
+                                        controller: _textControllerMemo,
                                         decoration: const InputDecoration(
                                           hintText: '请输入关键字',
                                         ),
@@ -1448,13 +1793,13 @@ class DialogAddBocoJarVersion extends Dialog {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text('组件备注：'),
+                                    const Text('坐标：'),
                                     Card(
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(5.0),
                                       ),
                                       child: TextField(
-                                        controller: _textControllerArtifactId,
+                                        controller: _textControllerDependency,
                                         decoration: const InputDecoration(
                                           hintText: '请输入关键字',
                                         ),
@@ -1472,9 +1817,19 @@ class DialogAddBocoJarVersion extends Dialog {
                         const Spacer(),
                         ElevatedButton(
                             onPressed: () {
+                              setState(() {
+                                _isArtifactIdChecked = !_isArtifactIdChecked;
+                              });
+                            },
+                            child: const Text('校验')),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        ElevatedButton(
+                            onPressed: () {
                               Navigator.of(context).pop(true);
                             },
-                            child: const Text('确定')),
+                            child: const Text('保存')),
                         const SizedBox(
                           width: 10,
                         ),
@@ -1482,7 +1837,7 @@ class DialogAddBocoJarVersion extends Dialog {
                             onPressed: () {
                               Navigator.of(context).pop(false);
                             },
-                            child: const Text('关闭')),
+                            child: const Text('放弃')),
                         const SizedBox(
                           width: 10,
                         ),
@@ -1498,6 +1853,70 @@ class DialogAddBocoJarVersion extends Dialog {
           ));
     });
   }
+
+  /*
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(''),
+                                  ElevatedButton(onPressed: () {}, child: const Text('校验')),
+                                ],
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              !_isArtifactIdChecked
+                                  ? const SizedBox(
+                                      width: 300,
+                                    )
+                                  : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                      const Text('制品名称不同，但制品ID相同，版本列表如下：'),
+                                      Container(
+                                        alignment: Alignment.topLeft,
+                                        // color: Colors.red,
+                                        //child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                                        //const Text('版本：'),
+                                        //Container(
+                                        //alignment: Alignment.topLeft,
+                                        width: 300,
+                                        child:
+                                            //     const Text(''),
+                                    ]),
+
+
+
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(''),
+                                  ElevatedButton(onPressed: () {}, child: const Text('校验')),
+                                ],
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              !_isStatusChecked
+                                  ? const SizedBox(
+                                      width: 300,
+                                    )
+                                  : Expanded(
+                                      flex: 1,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: const [
+                                          Text(''),
+                                          Text('校验结果：'),
+                                        ],
+                                      ),
+                                    ),
+
+  */
 }
 
 //ignore: must_be_immutable
@@ -1509,8 +1928,28 @@ class DialogManageJarsCategories extends Dialog {
   int groupIdSelected = 1;
   int versionSelected = 1;
 
+  final _colorMask = const Color.fromRGBO(0, 0, 0, 0.2);
+  final _colorDialog = const Color.fromRGBO(255, 255, 255, 1);
+  final _colorTitleBar = const Color.fromRGBO(0, 55, 175, 1);
+  final _colorTitleBarBorder = const Color.fromRGBO(215, 215, 215, 1);
+  final _colorTitle = const Color.fromRGBO(255, 255, 255, 1);
+  final _colorContent = const Color.fromRGBO(215, 215, 215, 1);
+  final _colorContentBorder = const Color.fromRGBO(215, 215, 215, 1);
+
   void onButtonPressedAddJarsCategoriesFirst(BuildContext context) async {
-    bool? isConfirmed = await showDialogAddJarsCategoriesFirst(context);
+    bool? isConfirmed = await showDialogAddJarsCategoriesFirst(context, '新增一级（制品归属）类目');
+
+    if (isConfirmed != null) {
+      if (isConfirmed) {
+        _logger.d("重建依赖关系");
+      } else {
+        _logger.d("放弃操作");
+      }
+    }
+  }
+
+  void onButtonPressedModifyJarsCategoriesFirst(BuildContext context) async {
+    bool? isConfirmed = await showDialogAddJarsCategoriesFirst(context, '修改一级（制品归属）类目');
 
     if (isConfirmed != null) {
       if (isConfirmed) {
@@ -1522,7 +1961,7 @@ class DialogManageJarsCategories extends Dialog {
   }
 
   void onButtonPressedAddJarsCategoriesSecond(BuildContext context) async {
-    bool? isConfirmed = await showDialogAddJarsCategoriesSecond(context);
+    bool? isConfirmed = await showDialogAddJarsCategoriesSecond(context, '新增二级（制品分组）类目');
 
     if (isConfirmed != null) {
       if (isConfirmed) {
@@ -1533,20 +1972,34 @@ class DialogManageJarsCategories extends Dialog {
     }
   }
 
-  Future<bool?> showDialogAddJarsCategoriesFirst(BuildContext context) {
+  void onButtonPressedModifyJarsCategoriesSecond(BuildContext context) async {
+    bool? isConfirmed = await showDialogAddJarsCategoriesSecond(context, '修改二级（制品分组）类目');
+
+    if (isConfirmed != null) {
+      if (isConfirmed) {
+        _logger.d("重建依赖关系");
+      } else {
+        _logger.d("放弃操作");
+      }
+    }
+  }
+
+  Future<bool?> showDialogAddJarsCategoriesFirst(BuildContext context, String title) {
     return showDialog<bool>(
       context: context,
       builder: (context) {
-        return DialogAddJarsCategoriesFirst();
+        return DialogAddJarsCategoriesFirst(
+          title: title,
+        );
       },
     );
   }
 
-  Future<bool?> showDialogAddJarsCategoriesSecond(BuildContext context) {
+  Future<bool?> showDialogAddJarsCategoriesSecond(BuildContext context, String title) {
     return showDialog<bool>(
       context: context,
       builder: (context) {
-        return DialogAddJarsCategoriesSecond();
+        return DialogAddJarsCategoriesSecond(title: title);
       },
     );
   }
@@ -1558,110 +2011,123 @@ class DialogManageJarsCategories extends Dialog {
           type: MaterialType.transparency,
           child: Container(
             alignment: Alignment.center,
-            color: const Color.fromRGBO(0, 0, 0, 0.2),
+            color: _colorMask,
             child: Container(
               alignment: Alignment.center,
               width: 800,
               height: 600,
-              color: const Color.fromRGBO(0, 49, 222, 1),
+              color: _colorDialog,
               child: Column(children: [
                 Container(
                   alignment: Alignment.center,
                   height: 40,
-                  decoration: BoxDecoration(color: const Color.fromRGBO(75, 75, 75, 1), border: Border.all(color: const Color.fromRGBO(75, 75, 75, 1), width: 1)),
-                  child: const Text(
-                    '自研组件类目管理',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
+                  decoration: BoxDecoration(color: _colorTitleBar, border: Border.all(color: _colorTitleBarBorder, width: 1)),
+                  child: Stack(children: [
+                    Container(
+                      alignment: Alignment.center,
+                      margin: const EdgeInsets.only(right: 5),
+                      child: Text(
+                        '自研组件类目管理',
+                        style: TextStyle(color: _colorTitle, fontSize: 16),
+                      ),
+                    ),
+                    Container(
+                      alignment: Alignment.centerRight,
+                      margin: const EdgeInsets.only(right: 5),
+                      child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(false);
+                          },
+                          child: const Text('关闭')),
+                    ),
+                  ]),
                 ),
                 Expanded(
                   child: Container(
                     alignment: Alignment.topLeft,
-                    decoration: BoxDecoration(color: const Color.fromRGBO(215, 215, 215, 1), border: Border.all(color: const Color.fromRGBO(215, 215, 215, 1), width: 1)),
-                    child: Column(children: [
-                      Expanded(
-                        child: Container(
-                          alignment: Alignment.topLeft,
-                          margin: const EdgeInsets.all(10),
-                          color: const Color.fromRGBO(215, 215, 215, 1),
-                          child: Row(children: [
-                            Expanded(
-                              child: Column(
-                                children: [
-                                  Row(children: [
-                                    const Text('一级类目：'),
-                                    const Spacer(),
-                                    ElevatedButton(
-                                        onPressed: () {
-                                          onButtonPressedAddJarsCategoriesFirst(context);
-                                        },
-                                        child: const Text('新增')),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    ElevatedButton(onPressed: () {}, child: const Text('删除')),
-                                  ]),
-                                  Expanded(
-                                      child: Container(
-                                    alignment: Alignment.topLeft,
-                                    color: Colors.amber,
-                                  ))
-                                ],
-                              ),
+                    decoration: BoxDecoration(color: _colorContent, border: Border.all(color: _colorContentBorder, width: 1)),
+                    child: Expanded(
+                      child: Container(
+                        alignment: Alignment.topLeft,
+                        margin: const EdgeInsets.all(10),
+                        color: _colorContent,
+                        child: Row(children: [
+                          Expanded(
+                            child: Column(
+                              children: [
+                                Row(children: [
+                                  const Text('一级类目（制品归属）：'),
+                                  const Spacer(),
+                                  ElevatedButton(
+                                      onPressed: () {
+                                        onButtonPressedAddJarsCategoriesFirst(context);
+                                      },
+                                      child: const Text('新增')),
+                                  const SizedBox(
+                                    width: 5,
+                                  ),
+                                  ElevatedButton(
+                                      onPressed: () {
+                                        onButtonPressedModifyJarsCategoriesFirst(context);
+                                      },
+                                      child: const Text('修改')),
+                                  const SizedBox(
+                                    width: 5,
+                                  ),
+                                  ElevatedButton(onPressed: () {}, child: const Text('删除')),
+                                ]),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                Expanded(
+                                    child: Container(
+                                  alignment: Alignment.topLeft,
+                                  color: Colors.white,
+                                ))
+                              ],
                             ),
-                            const SizedBox(
-                              width: 10,
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                Row(children: [
+                                  const Text('二级类目（制品分组）：'),
+                                  const Spacer(),
+                                  ElevatedButton(
+                                      onPressed: () {
+                                        onButtonPressedAddJarsCategoriesSecond(context);
+                                      },
+                                      child: const Text('新增')),
+                                  const SizedBox(
+                                    width: 5,
+                                  ),
+                                  ElevatedButton(
+                                      onPressed: () {
+                                        onButtonPressedModifyJarsCategoriesSecond(context);
+                                      },
+                                      child: const Text('修改')),
+                                  const SizedBox(
+                                    width: 5,
+                                  ),
+                                  ElevatedButton(onPressed: () {}, child: const Text('删除')),
+                                ]),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                Expanded(
+                                    child: Container(
+                                  alignment: Alignment.topLeft,
+                                  color: Colors.white,
+                                ))
+                              ],
                             ),
-                            Expanded(
-                              child: Column(
-                                children: [
-                                  Row(children: [
-                                    const Text('二级类目：'),
-                                    const Spacer(),
-                                    ElevatedButton(
-                                        onPressed: () {
-                                          onButtonPressedAddJarsCategoriesSecond(context);
-                                        },
-                                        child: const Text('新增')),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    ElevatedButton(onPressed: () {}, child: const Text('删除')),
-                                  ]),
-                                  Expanded(
-                                      child: Container(
-                                    alignment: Alignment.topLeft,
-                                    color: Colors.amber,
-                                  ))
-                                ],
-                              ),
-                            ),
-                          ]),
-                        ),
+                          ),
+                        ]),
                       ),
-                      Row(children: [
-                        const Spacer(),
-                        ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).pop(true);
-                            },
-                            child: const Text('确定')),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).pop(false);
-                            },
-                            child: const Text('关闭')),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                      ]),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                    ]),
+                    ),
                   ),
                 ),
               ]),
@@ -1673,10 +2139,19 @@ class DialogManageJarsCategories extends Dialog {
 
 //ignore: must_be_immutable
 class DialogAddJarsCategoriesFirst extends Dialog {
-  DialogAddJarsCategoriesFirst({super.key});
+  DialogAddJarsCategoriesFirst({super.key, required this.title});
 
+  final String title;
   int groupIdSelected = 1;
   int versionSelected = 1;
+
+  final _colorMask = const Color.fromRGBO(0, 0, 0, 0.2);
+  final _colorDialog = const Color.fromRGBO(255, 255, 255, 1);
+  final _colorTitleBar = const Color.fromRGBO(0, 55, 175, 1);
+  final _colorTitleBarBorder = const Color.fromRGBO(215, 215, 215, 1);
+  final _colorTitle = const Color.fromRGBO(255, 255, 255, 1);
+  final _colorContent = const Color.fromRGBO(215, 215, 215, 1);
+  final _colorContentBorder = const Color.fromRGBO(215, 215, 215, 1);
 
   @override
   Widget build(BuildContext context) {
@@ -1685,34 +2160,34 @@ class DialogAddJarsCategoriesFirst extends Dialog {
           type: MaterialType.transparency,
           child: Container(
             alignment: Alignment.center,
-            color: const Color.fromRGBO(0, 0, 0, 0.1),
+            color: _colorMask,
             child: Container(
               alignment: Alignment.center,
-              width: 600,
-              height: 400,
-              color: const Color.fromRGBO(0, 49, 222, 1),
+              width: 400,
+              height: 300,
+              color: _colorDialog,
               child: Column(children: [
                 Container(
                   alignment: Alignment.center,
                   height: 40,
-                  decoration: BoxDecoration(color: const Color.fromRGBO(75, 75, 75, 1), border: Border.all(color: const Color.fromRGBO(75, 75, 75, 1), width: 1)),
-                  child: const Text(
-                    '自研组件类目管理 - 新增一级类目',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  decoration: BoxDecoration(color: _colorTitleBar, border: Border.all(color: _colorTitleBarBorder, width: 1)),
+                  child: Text(
+                    title,
+                    style: TextStyle(color: _colorTitle, fontSize: 16),
                   ),
                 ),
                 Expanded(
                   child: Container(
                     alignment: Alignment.topLeft,
-                    decoration: BoxDecoration(color: const Color.fromRGBO(215, 215, 215, 1), border: Border.all(color: const Color.fromRGBO(215, 215, 215, 1), width: 1)),
+                    decoration: BoxDecoration(color: _colorContent, border: Border.all(color: _colorContentBorder, width: 1)),
                     child: Column(children: [
                       Expanded(
                         child: Container(
                           alignment: Alignment.topLeft,
                           margin: const EdgeInsets.all(10),
-                          color: const Color.fromRGBO(215, 215, 215, 1),
-                          child: Column(children: [
-                            const Text('一级类目名称：'),
+                          color: _colorContent,
+                          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            const Text('一级类目（制品归属）名称：'),
                             Card(
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(5.0),
@@ -1724,7 +2199,10 @@ class DialogAddJarsCategoriesFirst extends Dialog {
                                 ),
                               ),
                             ),
-                            const Text('一级类目标识：'),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            const Text('一级类目（制品归属）标识：'),
                             Card(
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(5.0),
@@ -1745,7 +2223,7 @@ class DialogAddJarsCategoriesFirst extends Dialog {
                             onPressed: () {
                               Navigator.of(context).pop(true);
                             },
-                            child: const Text('确定')),
+                            child: const Text('保存')),
                         const SizedBox(
                           width: 10,
                         ),
@@ -1753,7 +2231,7 @@ class DialogAddJarsCategoriesFirst extends Dialog {
                             onPressed: () {
                               Navigator.of(context).pop(false);
                             },
-                            child: const Text('关闭')),
+                            child: const Text('放弃')),
                         const SizedBox(
                           width: 10,
                         ),
@@ -1773,10 +2251,19 @@ class DialogAddJarsCategoriesFirst extends Dialog {
 
 //ignore: must_be_immutable
 class DialogAddJarsCategoriesSecond extends Dialog {
-  DialogAddJarsCategoriesSecond({super.key});
+  DialogAddJarsCategoriesSecond({super.key, required this.title});
 
+  final String title;
   int groupIdSelected = 1;
   int versionSelected = 1;
+
+  final _colorMask = const Color.fromRGBO(0, 0, 0, 0.2);
+  final _colorDialog = const Color.fromRGBO(255, 255, 255, 1);
+  final _colorTitleBar = const Color.fromRGBO(0, 55, 175, 1);
+  final _colorTitleBarBorder = const Color.fromRGBO(215, 215, 215, 1);
+  final _colorTitle = const Color.fromRGBO(255, 255, 255, 1);
+  final _colorContent = const Color.fromRGBO(215, 215, 215, 1);
+  final _colorContentBorder = const Color.fromRGBO(215, 215, 215, 1);
 
   @override
   Widget build(BuildContext context) {
@@ -1785,34 +2272,34 @@ class DialogAddJarsCategoriesSecond extends Dialog {
           type: MaterialType.transparency,
           child: Container(
             alignment: Alignment.center,
-            color: const Color.fromRGBO(0, 0, 0, 0.1),
+            color: _colorMask,
             child: Container(
               alignment: Alignment.center,
-              width: 600,
-              height: 400,
-              color: const Color.fromRGBO(0, 49, 222, 1),
+              width: 400,
+              height: 300,
+              color: _colorDialog,
               child: Column(children: [
                 Container(
                   alignment: Alignment.center,
                   height: 40,
-                  decoration: BoxDecoration(color: const Color.fromRGBO(75, 75, 75, 1), border: Border.all(color: const Color.fromRGBO(75, 75, 75, 1), width: 1)),
-                  child: const Text(
-                    '自研组件类目管理 - 新增二级类目',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  decoration: BoxDecoration(color: _colorTitleBar, border: Border.all(color: _colorTitleBarBorder, width: 1)),
+                  child: Text(
+                    title,
+                    style: TextStyle(color: _colorTitle, fontSize: 16),
                   ),
                 ),
                 Expanded(
                   child: Container(
                     alignment: Alignment.topLeft,
-                    decoration: BoxDecoration(color: const Color.fromRGBO(215, 215, 215, 1), border: Border.all(color: const Color.fromRGBO(215, 215, 215, 1), width: 1)),
+                    decoration: BoxDecoration(color: _colorContent, border: Border.all(color: _colorContentBorder, width: 1)),
                     child: Column(children: [
                       Expanded(
                         child: Container(
                           alignment: Alignment.topLeft,
                           margin: const EdgeInsets.all(10),
-                          color: const Color.fromRGBO(215, 215, 215, 1),
-                          child: Column(children: [
-                            const Text('二级类目名称：'),
+                          color: _colorContent,
+                          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            const Text('二级类目（制品分组）名称：'),
                             Card(
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(5.0),
@@ -1824,7 +2311,10 @@ class DialogAddJarsCategoriesSecond extends Dialog {
                                 ),
                               ),
                             ),
-                            const Text('二级类目标识：'),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            const Text('二级类目（制品分组）标识：'),
                             Card(
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(5.0),
@@ -1845,7 +2335,7 @@ class DialogAddJarsCategoriesSecond extends Dialog {
                             onPressed: () {
                               Navigator.of(context).pop(true);
                             },
-                            child: const Text('确定')),
+                            child: const Text('保存')),
                         const SizedBox(
                           width: 10,
                         ),
@@ -1853,7 +2343,7 @@ class DialogAddJarsCategoriesSecond extends Dialog {
                             onPressed: () {
                               Navigator.of(context).pop(false);
                             },
-                            child: const Text('关闭')),
+                            child: const Text('放弃')),
                         const SizedBox(
                           width: 10,
                         ),
