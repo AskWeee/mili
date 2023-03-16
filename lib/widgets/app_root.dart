@@ -6,6 +6,7 @@ import 'package:mili/widgets/devops_open_jars.dart';
 import 'package:mili/widgets/devops_release.dart';
 import 'package:mili/widgets/devops_security.dart';
 import 'package:mili/widgets/devops_src.dart';
+import 'package:mili/widgets/devops_dev_tools.dart';
 import 'package:mili/widgets/home_footer.dart';
 import 'package:mili/widgets/home_navs.dart';
 import 'devops_products.dart';
@@ -108,6 +109,9 @@ class _AppRootState extends State<AppRoot> {
               break;
             case '自研组件':
               navigatorChanged(navigator, const DevopsBocoJars());
+              break;
+            case '开发工具':
+              navigatorChanged(navigator, const DevopsDevTools());
               break;
             case '安全管理':
               navigatorChanged(navigator, const DevopsSecurity());

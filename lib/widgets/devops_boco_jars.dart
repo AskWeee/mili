@@ -4,6 +4,7 @@ import 'package:logger/logger.dart';
 import 'package:flutter_treeview/flutter_treeview.dart';
 import 'package:mili/utils/helper.dart';
 import 'package:intl/intl.dart';
+import '../utils/events.dart';
 
 class DevopsBocoJars extends StatefulWidget {
   const DevopsBocoJars({super.key});
@@ -13,14 +14,23 @@ class DevopsBocoJars extends StatefulWidget {
 }
 
 class _DevopsBocoJarsState extends State<DevopsBocoJars> {
-  bool isChanging = false;
-
   final _logger = Logger();
   final _helper = Helper();
 
+  List _listBocoJars = [];
+  int _rowSelectedLast = -1;
+
+  // bool _isJarSelectd = false;
+  bool _isJarVersionStatusUnknown = false;
+  bool _isJarVersionStatusPlanning = false;
+  bool _isJarVersionStatusCoding = false;
+  bool _isJarVersionStatusReleased = false;
+
+  bool isChanging = false;
+
   String versionsSelected = '1.0.1';
   String developerSelected = 'gaoyanfu';
-  String statusSelected = 'deploy';
+  String statusSelected = 'unknown';
 
   final Color _colorBorderBoxRoot = const Color.fromRGBO(0, 122, 204, 1);
   final Color _colorBackgroundToolbar = const Color.fromRGBO(61, 61, 61, 1);
@@ -38,8 +48,6 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
 
   final ScrollController scrollControllerTable = ScrollController();
   final ScrollController scrollControllerDataTable = ScrollController();
-
-  List _listBocoJars = [];
 
   Slider mySlider = Slider(
       value: 1,
@@ -287,9 +295,7 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
       margin: const EdgeInsets.all(10),
       color: const Color.fromRGBO(155, 155, 155, 1),
       child: Scrollbar(
-        // thumbVisibility: true,
-        // trackVisibility: true,
-        // interactive: true,
+        thumbVisibility: true,
         controller: scrollControllerDataTable,
         child: SingleChildScrollView(
           controller: scrollControllerDataTable,
@@ -501,6 +507,56 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
                   child: Card(
                     child: DropdownButton(
                         isExpanded: true,
+                        value: statusSelected,
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'unknown',
+                            child: Text(''),
+                          ),
+                          DropdownMenuItem(
+                            value: 'planning',
+                            child: Text('规划中'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'coding',
+                            child: Text('开发中'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'released',
+                            child: Text('已发布'),
+                          )
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            statusSelected = value!;
+
+                            bool isJarVersionStatusUnknown = false;
+                            bool isJarVersionStatusPlanning = false;
+                            bool isJarVersionStatusCoding = false;
+                            bool isJarVersionStatusReleased = false;
+                            if (value == 'unknown') {
+                              isJarVersionStatusUnknown = true;
+                            } else if (value == 'planning') {
+                              isJarVersionStatusPlanning = true;
+                            } else if (value == 'coding') {
+                              isJarVersionStatusCoding = true;
+                            } else if (value == 'released') {
+                              isJarVersionStatusReleased = true;
+                            }
+                            setState(() {
+                              _isJarVersionStatusUnknown = isJarVersionStatusUnknown;
+                              _isJarVersionStatusPlanning = isJarVersionStatusPlanning;
+                              _isJarVersionStatusCoding = isJarVersionStatusCoding;
+                              _isJarVersionStatusReleased = isJarVersionStatusReleased;
+                            });
+                          });
+                        }),
+                  ),
+                ),
+                Expanded(
+                  child: Card(
+                    child: DropdownButton(
+                        isExpanded: true,
                         value: developerSelected,
                         items: const [
                           DropdownMenuItem(
@@ -515,32 +571,6 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
                         onChanged: (value) {
                           setState(() {
                             developerSelected = value!;
-                          });
-                        }),
-                  ),
-                ),
-                Expanded(
-                  child: Card(
-                    child: DropdownButton(
-                        isExpanded: true,
-                        value: statusSelected,
-                        items: const [
-                          DropdownMenuItem(
-                            value: 'plan',
-                            child: Text('规划中'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'dev',
-                            child: Text('开发中'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'deploy',
-                            child: Text('已发布'),
-                          )
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            statusSelected = value!;
                           });
                         }),
                   ),
@@ -613,6 +643,39 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
               ),
             ),
           ),
+          _isJarVersionStatusUnknown
+              ? const SizedBox(height: 5)
+              : Container(
+                  alignment: Alignment.topLeft,
+                  padding: const EdgeInsets.fromLTRB(15, 5, 15, 15),
+                  child: Row(children: [
+                    _isJarVersionStatusReleased
+                        ? Row(
+                            children: [
+                              ElevatedButton(onPressed: () {}, child: const Text('下载')),
+                              const SizedBox(width: 10),
+                            ],
+                          )
+                        : const SizedBox(),
+                    _isJarVersionStatusPlanning
+                        ? ElevatedButton(
+                            onPressed: () {
+                              onButtonPressedJumpToDevToolsView();
+                            },
+                            child: const Text('创建 Maven 项目'))
+                        : const SizedBox(),
+                    _isJarVersionStatusCoding || _isJarVersionStatusReleased
+                        ? ElevatedButton(
+                            onPressed: () {
+                              onButtonPressedJumpToSrcView();
+                            },
+                            child: const Text('跳转到源码管理'))
+                        : const SizedBox(),
+                    const Spacer(),
+                    ElevatedButton(onPressed: () {}, child: const Text('删除')),
+                    const SizedBox(),
+                  ]),
+                ),
         ]));
   }
 
@@ -682,17 +745,73 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
     );
   }
 
-  DataTable makeJarsDataTable() {
+  Card makeJarsDataTable() {
     List<DataColumn> columns = [];
-    columns.add(const DataColumn(label: Text('序号')));
-    columns.add(const DataColumn(label: Text('归属')));
-    columns.add(const DataColumn(label: Text('归属标识')));
-    columns.add(const DataColumn(label: Text('分组')));
-    columns.add(const DataColumn(label: Text('分组标识')));
-    columns.add(const DataColumn(label: Text('制品')));
-    columns.add(const DataColumn(label: Text('制品标识')));
+    var colorHeader = const Color.fromRGBO(255, 255, 255, 1);
+    var colorHeaderBackground = const Color.fromRGBO(75, 175, 255, 1);
 
-    return DataTable(columns: columns, rows: _makeBocoJarsDataRowList(_listBocoJars));
+    columns.add(
+      const DataColumn(
+        label: Text(
+          '序号',
+        ),
+      ),
+    );
+    columns.add(
+      const DataColumn(
+          label: Text(
+            '归属名称',
+          ),
+          tooltip: '亿阳信通-{产品名称}'),
+    );
+    columns.add(
+      const DataColumn(
+          label: Text(
+            '归属标识',
+          ),
+          tooltip: 'com.boco.{product}'),
+    );
+    columns.add(
+      const DataColumn(
+        label: Text(
+          '分组名称',
+        ),
+      ),
+    );
+    columns.add(
+      const DataColumn(
+        label: Text(
+          '分组标识',
+        ),
+      ),
+    );
+    columns.add(
+      const DataColumn(
+        label: Text(
+          '制品名称',
+        ),
+      ),
+    );
+    columns.add(
+      const DataColumn(
+        label: Text(
+          '制品标识',
+        ),
+      ),
+    );
+
+    return Card(
+        child: DataTable(
+            dividerThickness: 1,
+            dataRowHeight: 35,
+            showBottomBorder: true,
+            headingTextStyle: TextStyle(fontWeight: FontWeight.bold, color: colorHeader),
+            headingRowColor: MaterialStateProperty.resolveWith((states) => colorHeaderBackground),
+            sortColumnIndex: 1,
+            sortAscending: true,
+            columns: columns,
+            onSelectAll: (selected) {},
+            rows: makeBocoJarsDataRowList()));
   }
 
   void onButtonPressedRefresh() {
@@ -747,6 +866,14 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
         _logger.d("放弃操作");
       }
     }
+  }
+
+  void onButtonPressedJumpToDevToolsView() {
+    eventBus.fire(EventOnNavigatorChanged('开发工具'));
+  }
+
+  void onButtonPressedJumpToSrcView() {
+    eventBus.fire(EventOnNavigatorChanged('源码管理'));
   }
 
   void onScrllPositionChanged() {
@@ -892,10 +1019,10 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
     return list;
   }
 
-  List<DataRow> _makeBocoJarsDataRowList(List inData) {
+  List<DataRow> makeBocoJarsDataRowList() {
     List<DataRow> myResult = [];
 
-    if (inData.isEmpty) {
+    if (_listBocoJars.isEmpty) {
       List<DataCell> cells = [];
 
       for (var i = 0; i < 7; i++) {
@@ -904,16 +1031,28 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
 
       myResult.add(DataRow(cells: cells));
     } else {
-      for (var i = 0; i < inData.length * 50; i++) {
+      for (var i = 0; i < _listBocoJars.length; i++) {
         List<DataCell> cells = [];
 
         var f = NumberFormat("0000");
         cells.add(DataCell(Text(f.format(i + 1))));
-        for (var j = 1; j < inData[i % inData.length].length; j++) {
-          cells.add(DataCell(Text('${inData[i % inData.length][j]}')));
+        for (var j = 1; j < _listBocoJars[i].length - 1; j++) {
+          cells.add(DataCell(Text('${_listBocoJars[i][j]}')));
         }
 
-        myResult.add(DataRow(cells: cells));
+        myResult.add(DataRow(
+          selected: _listBocoJars[i][_listBocoJars[i].length - 1],
+          onSelectChanged: (value) {
+            setState(() {
+              if (_rowSelectedLast != -1) {
+                _listBocoJars[_rowSelectedLast][_listBocoJars[_rowSelectedLast].length - 1] = false;
+              }
+              _listBocoJars[i][_listBocoJars[i].length - 1] = value;
+              _rowSelectedLast = i;
+            });
+          },
+          cells: cells,
+        ));
       }
     }
 
@@ -967,6 +1106,15 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
   void getBocoJars() {
     _helper.getBocoJars().then((List value) {
       _logger.d('get boco jars >>>${value.length}<<<');
+
+      if (value.isNotEmpty) {
+        for (List element in value) {
+          element.add(false);
+        }
+        for (int i = 0; i < 19; i++) {
+          value.add(List.from(value[0]));
+        }
+      }
 
       setState(() {
         _listBocoJars = value;
@@ -1031,7 +1179,7 @@ class DialogAddBocoJar extends Dialog {
   String companyProductIdSelected = '';
   String groupIdSelected = '';
   String versionsSelected = '';
-  String statusSelected = '';
+  String statusSelected = 'unknown';
   String checkResultSelected = '';
 
   bool _isArtifactIdChecked = false;
@@ -1242,19 +1390,19 @@ class DialogAddBocoJar extends Dialog {
                                         value: statusSelected,
                                         items: const [
                                           DropdownMenuItem(
-                                            value: '',
+                                            value: 'unknown',
                                             child: Text('请选择'),
                                           ),
                                           DropdownMenuItem(
-                                            value: 'design',
+                                            value: 'planning',
                                             child: Text('规划中'),
                                           ),
                                           DropdownMenuItem(
-                                            value: 'dev',
+                                            value: 'coding',
                                             child: Text('开发中'),
                                           ),
                                           DropdownMenuItem(
-                                            value: 'deploy',
+                                            value: 'released',
                                             child: Text('已发布'),
                                           ),
                                         ],
@@ -1481,7 +1629,7 @@ class DialogAddBocoJarVersion extends Dialog {
   String companyProductIdSelected = '';
   String groupIdSelected = '';
   String versionsSelected = '1.0.1';
-  String statusSelected = '';
+  String statusSelected = 'unknown';
   String checkResultSelected = '';
 
   bool _isArtifactIdChecked = false;
@@ -1714,19 +1862,19 @@ class DialogAddBocoJarVersion extends Dialog {
                                         value: statusSelected,
                                         items: const [
                                           DropdownMenuItem(
-                                            value: '',
+                                            value: 'unknown',
                                             child: Text('请选择'),
                                           ),
                                           DropdownMenuItem(
-                                            value: 'design',
+                                            value: 'planning',
                                             child: Text('规划中'),
                                           ),
                                           DropdownMenuItem(
-                                            value: 'dev',
+                                            value: 'coding',
                                             child: Text('开发中'),
                                           ),
                                           DropdownMenuItem(
-                                            value: 'deploy',
+                                            value: 'released',
                                             child: Text('已发布'),
                                           ),
                                         ],

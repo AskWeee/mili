@@ -44,7 +44,14 @@ class Helper {
   Future<List> getBocoJars() async {
     String url = 'http://localhost:5055/api/v1/get_boco_jars';
 
-    var headers = {"Access-Control-Allow-Origin": "*", 'Content-Type': 'application/json', 'Accept': '*/*'};
+    var headers = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": 'true',
+      "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      'Content-Type': 'application/json',
+      'Accept': '*/*'
+    };
 
     try {
       http.Response response = await http.get(Uri.parse(url), headers: headers);

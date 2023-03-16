@@ -65,8 +65,7 @@ class _HomeNavsState extends State<HomeNavs> {
                         alignment: Alignment.center,
                         child: Text(
                           '开发平台',
-                          style: TextStyle(
-                              color: _colorNavigatorSelected, fontSize: 16),
+                          style: TextStyle(color: _colorNavigatorSelected, fontSize: 16),
                         ),
                       )),
                   TextButton(
@@ -115,6 +114,14 @@ class _HomeNavsState extends State<HomeNavs> {
                           alignment: Alignment.center,
                           child: Text(
                             '自研组件',
+                            style: TextStyle(color: _colorNavigatorUnselected),
+                          ))),
+                  TextButton(
+                      onPressed: () => {_onNavigatorPressed('开发工具')},
+                      child: Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            '开发工具',
                             style: TextStyle(color: _colorNavigatorUnselected),
                           ))),
                   TextButton(
