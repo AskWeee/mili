@@ -52,7 +52,32 @@ class Helper {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Credentials": 'true',
       "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      'Content-Type': 'application/json',
+      'Accept': '*/*'
+    };
+
+    try {
+      http.Response response = await http.get(Uri.parse(url), headers: headers);
+
+      var responseBody = json.decode(response.body);
+
+      return responseBody['data'];
+    } catch (e) {
+      logger.d(e.toString());
+
+      return [];
+    }
+  }
+
+  Future<List> getOpenJars() async {
+    String url = 'http://localhost:5055/api/v1/get_open_jars';
+
+    var headers = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": 'true',
+      "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
       'Content-Type': 'application/json',
       'Accept': '*/*'
     };
