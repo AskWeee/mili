@@ -355,21 +355,22 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
 
   Container getWidgetJarsTree() {
     return Container(
-        alignment: Alignment.topLeft,
-        padding: const EdgeInsets.all(10),
-        color: _colorBackgroundTabBarView,
-        child: Card(
-          child: TreeView(
-              controller: TreeViewController(children: [
-            const Node(key: 'com', label: 'com', icon: Icons.folder, children: [
-              Node(
-                key: 'boco',
-                label: 'boco',
-                icon: Icons.folder,
-              )
-            ]),
-          ])),
-        ));
+      alignment: Alignment.topLeft,
+      padding: const EdgeInsets.all(10),
+      color: _colorBackgroundTabBarView,
+      child: Card(
+        child: TreeView(
+            controller: TreeViewController(children: [
+          const Node(key: 'com', label: 'com', icon: Icons.folder, children: [
+            Node(
+              key: 'boco',
+              label: 'boco',
+              icon: Icons.folder,
+            )
+          ]),
+        ])),
+      ),
+    );
   }
 
   Container getWidgetJarInfoLocation() {

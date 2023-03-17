@@ -705,15 +705,58 @@ class DialogManageCampBoot extends Dialog {
                           const SizedBox(
                             height: 10,
                           ),
-                          Row(children: [
-                            Text('pom.xml'),
-                          ]),
                           Expanded(
-                            child: Card(
-                              child: TextField(
-                                maxLines: 100,
+                            child: Row(children: [
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Row(children: [
+                                      Text('pom.xml'),
+                                      const Spacer(),
+                                      ElevatedButton(onPressed: () {}, child: const Text('校验')),
+                                      const SizedBox(
+                                        width: 5,
+                                      ),
+                                    ]),
+                                    Expanded(
+                                      child: Card(
+                                        child: TextField(
+                                          maxLines: 100,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Row(children: [
+                                      Text('子模块列表'),
+                                      const Spacer(),
+                                      ElevatedButton(onPressed: () {}, child: const Text('新增')),
+                                      const SizedBox(
+                                        width: 5,
+                                      ),
+                                      ElevatedButton(onPressed: () {}, child: const Text('删除')),
+                                      const SizedBox(
+                                        width: 5,
+                                      ),
+                                    ]),
+                                    Expanded(
+                                      child: Card(
+                                        child: TextField(
+                                          maxLines: 100,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ]),
                           ),
                         ]),
                       ),

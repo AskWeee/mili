@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 
 enum SingingCharacter { lafayette, jefferson }
 
+enum DevopsProductsViewNodeType { unknown, category, product, module, service, component }
+
 class Helper {
   var logger = Logger();
 
