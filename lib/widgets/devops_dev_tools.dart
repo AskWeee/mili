@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import '../utils/helper.dart';
 import 'package:flutter_treeview/flutter_treeview.dart';
+import '../utils/events.dart';
 
 class DevopsDevTools extends StatefulWidget {
   const DevopsDevTools({super.key});
@@ -21,6 +22,261 @@ class _DevopsDevToolsState extends State<DevopsDevTools> {
   late BoxDecoration _boxDecorationRoot;
   late BoxDecoration _boxDecorationContainer;
 
+  SingingCharacter? _character = SingingCharacter.lafayette;
+  String _campBootVersion = '1.0.0';
+
+  bool _isNewProjectViewSelected = true;
+
+  Widget getNewCampBootProject() {
+    return Column(
+      children: [
+        Column(
+          children: <Widget>[
+            Card(
+              child: ListTile(
+                title: const Text('1.0.0'),
+                leading: Radio<String>(
+                  value: '1.0.0',
+                  groupValue: _campBootVersion,
+                  onChanged: (String? value) {
+                    setState(() {
+                      _campBootVersion = value!;
+                    });
+                  },
+                ),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                title: const Text('1.0.2'),
+                leading: Radio<String>(
+                  value: '1.0.2',
+                  groupValue: _campBootVersion,
+                  onChanged: (String? value) {
+                    setState(() {
+                      _campBootVersion = value!;
+                    });
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        const Text('项目元数据：'),
+        Row(
+          children: [
+            Container(
+              alignment: Alignment.topRight,
+              width: 125,
+              child: const Text('Group ID:'),
+            ),
+            const Expanded(
+              child: Card(
+                child: TextField(),
+              ),
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            Container(
+              alignment: Alignment.topRight,
+              width: 125,
+              child: const Text('Artifact ID:'),
+            ),
+            const Expanded(
+              child: Card(
+                child: TextField(),
+              ),
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            Container(
+              alignment: Alignment.topRight,
+              width: 125,
+              child: const Text('Version:'),
+            ),
+            const Expanded(
+              child: Card(
+                child: TextField(),
+              ),
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            Container(
+              alignment: Alignment.topRight,
+              width: 125,
+              child: const Text('Description:'),
+            ),
+            const Expanded(
+              child: Card(
+                child: TextField(),
+              ),
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            Container(
+              alignment: Alignment.topRight,
+              width: 125,
+              child: const Text('Package Name:'),
+            ),
+            const Expanded(
+              child: Card(
+                child: TextField(),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          children: [
+            const Text('打包格式：'),
+            Row(
+              children: <Widget>[
+                Container(
+                  alignment: Alignment.topLeft,
+                  width: 130,
+                  child: Card(
+                    child: ListTile(
+                      title: const Text('Jar'),
+                      leading: Radio<String>(
+                        value: 'jar',
+                        groupValue: _campBootVersion,
+                        onChanged: (String? value) {
+                          setState(() {
+                            _campBootVersion = value!;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  alignment: Alignment.topLeft,
+                  width: 130,
+                  child: Card(
+                    child: ListTile(
+                      title: const Text('War'),
+                      leading: Radio<String>(
+                        value: 'war',
+                        groupValue: _campBootVersion,
+                        onChanged: (String? value) {
+                          setState(() {
+                            _campBootVersion = value!;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  alignment: Alignment.topLeft,
+                  width: 130,
+                  child: Card(
+                    child: ListTile(
+                      title: const Text('Pom'),
+                      leading: Radio<String>(
+                        value: 'pom',
+                        groupValue: _campBootVersion,
+                        onChanged: (String? value) {
+                          setState(() {
+                            _campBootVersion = value!;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          children: [
+            const Text('Java 版本：'),
+            Row(
+              children: <Widget>[
+                Container(
+                  alignment: Alignment.topLeft,
+                  width: 130,
+                  child: Card(
+                    child: ListTile(
+                      title: const Text('8'),
+                      leading: Radio<String>(
+                        value: '8',
+                        groupValue: _campBootVersion,
+                        onChanged: (String? value) {
+                          setState(() {
+                            _campBootVersion = value!;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  alignment: Alignment.topLeft,
+                  width: 130,
+                  child: Card(
+                    child: ListTile(
+                      title: const Text('11'),
+                      leading: Radio<String>(
+                        value: '11',
+                        groupValue: _campBootVersion,
+                        onChanged: (String? value) {
+                          setState(() {
+                            _campBootVersion = value!;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        const Text('子模块列表：'),
+        Expanded(
+          child: Container(
+            alignment: Alignment.topLeft,
+            margin: const EdgeInsets.all(5),
+            decoration: _boxDecorationContainer,
+            child: const Card(
+              child: TextField(),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget getHistoryCampBootProject() {
+    return Container(
+      alignment: Alignment.topLeft,
+      child: const Text('history of projects'),
+    );
+  }
+
+  void onButtonPressedNew() {}
+
   Container _layoutMain() {
     return Container(
       alignment: Alignment.topLeft,
@@ -31,43 +287,33 @@ class _DevopsDevToolsState extends State<DevopsDevTools> {
             alignment: Alignment.topLeft,
             //margin: const EdgeInsets.all(5),
             //decoration: _boxDecorationContainer,
-            width: 400,
+            width: 500,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  alignment: Alignment.topLeft,
-                  margin: const EdgeInsets.fromLTRB(5, 5, 5, 0),
-                  height: 30,
-                  child: Row(children: [
-                    Text(
-                      '自研组件 Maven 工程列表：',
-                      style: _textStyleNormal,
-                    ),
-                    const Spacer(),
-                    ElevatedButton(onPressed: () {}, child: const Text('刷新')),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    ElevatedButton(onPressed: () {}, child: const Text('开仓')),
-                  ]),
-                ),
-                Expanded(
-                  child: Container(
-                    alignment: Alignment.topLeft,
-                    margin: const EdgeInsets.all(5),
-                    decoration: _boxDecorationContainer,
-                    child: Card(
-                      child: TreeView(
-                        controller: TreeViewController(children: [
-                          const Node(key: 'com.boco.alarms', label: '亿阳信通故障管理', icon: Icons.folder, children: [
-                            Node(key: 'ucmp', label: '集中配置', icon: Icons.folder, children: [
-                              Node(key: 'ucmp-client', label: '集中配置客户端API服务', icon: Icons.folder, children: []),
-                            ]),
-                          ]),
-                        ]),
-                      ),
-                    ),
+                Row(children: [
+                  const Text('CampBoot 版本：'),
+                  const Spacer(),
+                  ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _isNewProjectViewSelected = true;
+                        });
+                      },
+                      child: const Text('创建')),
+                  const SizedBox(
+                    width: 5,
                   ),
+                  ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _isNewProjectViewSelected = false;
+                        });
+                      },
+                      child: const Text('历史')),
+                ]),
+                Expanded(
+                  child: _isNewProjectViewSelected ? getNewCampBootProject() : getHistoryCampBootProject(),
                 ),
               ],
             ),
@@ -86,23 +332,11 @@ class _DevopsDevToolsState extends State<DevopsDevTools> {
                     height: 30,
                     child: Row(children: [
                       Text(
-                        '亿阳信通故障管理 > 集中配置 > 集中配置客户端 API 服务：',
+                        'Demo.zip',
                         style: _textStyleNormal,
                       ),
                       const Spacer(),
-                      ElevatedButton(onPressed: () {}, child: const Text('刷新')),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      ElevatedButton(onPressed: () {}, child: const Text('审查')),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      ElevatedButton(onPressed: () {}, child: const Text('构建')),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      ElevatedButton(onPressed: () {}, child: const Text('拉取')),
+                      ElevatedButton(onPressed: () {}, child: const Text('下载')),
                       const SizedBox(
                         width: 5,
                       ),
@@ -110,18 +344,14 @@ class _DevopsDevToolsState extends State<DevopsDevTools> {
                       const SizedBox(
                         width: 5,
                       ),
-                      ElevatedButton(onPressed: () {}, child: const Text('创建分支')),
+                      ElevatedButton(
+                          onPressed: () {
+                            eventBus.fire(EventOnNavigatorChanged('源码管理'));
+                          },
+                          child: const Text('跳转到【源码管理】')),
                       const SizedBox(
                         width: 5,
                       ),
-                      ElevatedButton(onPressed: () {}, child: const Text('合并分支')),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      ElevatedButton(onPressed: () {}, child: const Text('删除分支')),
-                      // const SizedBox(
-                      //   width: 5,
-                      // ),
                     ]),
                   ),
                   Expanded(
@@ -138,20 +368,7 @@ class _DevopsDevToolsState extends State<DevopsDevTools> {
                             child: Card(
                               child: TreeView(
                                 controller: TreeViewController(children: [
-                                  const Node(key: '1com.boco.alarms', label: '分支 - CAMP 端', icon: Icons.folder, children: [
-                                    Node(key: '1working-copy', label: 'master', icon: Icons.folder, children: []),
-                                    Node(key: '1istory', label: 'branch-1', icon: Icons.folder, children: []),
-                                    Node(key: '1stashes', label: 'branch-2', icon: Icons.folder, children: []),
-                                    Node(key: '1branches-review', label: 'branch-3', icon: Icons.folder, children: []),
-                                  ]),
-                                  const Node(key: '2com.boco.alarms', label: '分支 - GitLab 端', icon: Icons.folder, children: [
-                                    Node(key: '2working-copy', label: 'origin', icon: Icons.folder, children: [
-                                      Node(key: '2working-copy', label: 'master', icon: Icons.folder, children: []),
-                                      Node(key: '2istory', label: 'branch-1', icon: Icons.folder, children: []),
-                                      Node(key: '2stashes', label: 'branch-2', icon: Icons.folder, children: []),
-                                      Node(key: '2branches-review', label: 'branch-3', icon: Icons.folder, children: []),
-                                    ]),
-                                  ]),
+                                  const Node(key: '1com.boco.alarms', label: 'src', icon: Icons.folder, children: []),
                                 ]),
                               ),
                             ),
@@ -164,90 +381,13 @@ class _DevopsDevToolsState extends State<DevopsDevTools> {
                                 Container(
                               alignment: Alignment.topLeft,
                               // decoration: _boxDecorationContainer,
-                              child: DefaultTabController(
-                                length: 2,
-                                child: Column(children: [
-                                  Expanded(
-                                    flex: 1,
-                                    child: Container(
-                                      alignment: Alignment.topLeft,
-                                      margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                                      decoration: BoxDecoration(border: Border.all(color: _colorBorderRoot, width: 1)),
-                                      child: TabBarView(
-                                        children: [
-                                          Container(
-                                            alignment: Alignment.topLeft,
-                                            margin: const EdgeInsets.all(5),
-                                            //decoration: _boxDecorationContainer,
-                                            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: const [
-                                              Text('关联任务（通常为一个任务一个分支）'),
-                                              Card(
-                                                child: TextField(),
-                                              ),
-                                              Text('关联需求（通常为一个需求一个分支）'),
-                                              Card(
-                                                child: TextField(),
-                                              ),
-                                              Text('关联BUG（通常为一个 BUG 一个分支）'),
-                                              Card(
-                                                child: TextField(),
-                                              ),
-                                              Text('所属服务：（可能多个，服务由组件构成）'),
-                                              Card(
-                                                child: TextField(),
-                                              ),
-                                              Text('所属模块：（可能多个，模块由服务构成）'),
-                                              Card(
-                                                child: TextField(),
-                                              ),
-                                              Text('所属产品：（可能多个，产品由模块构成）'),
-                                              Card(
-                                                child: TextField(),
-                                              ),
-                                            ]),
-                                          ),
-                                          Container(
-                                            alignment: Alignment.topLeft,
-                                            child: Row(children: [
-                                              Container(
-                                                alignment: Alignment.topLeft,
-                                                margin: const EdgeInsets.fromLTRB(5, 5, 0, 5),
-                                                decoration: _boxDecorationContainer,
-                                                child: const Text('Working Copy'),
-                                              ),
-                                              Expanded(
-                                                child: Container(
-                                                  alignment: Alignment.topLeft,
-                                                  margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                                                  decoration: _boxDecorationContainer,
-                                                  child: const Text('Source Code'),
-                                                ),
-                                              ),
-                                            ]),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    alignment: Alignment.topLeft,
-                                    margin: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                                    child: const SizedBox(
-                                      width: 300,
-                                      child: Card(
-                                        child: TabBar(
-                                          labelColor: Color.fromRGBO(0, 0, 0, 1),
-                                          tabs: [
-                                            Tab(
-                                              text: '产品关联信息',
-                                            ),
-                                            Tab(
-                                              text: '分支历史信息',
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
+                              child: Container(
+                                alignment: Alignment.topLeft,
+                                margin: const EdgeInsets.all(5),
+                                //decoration: _boxDecorationContainer,
+                                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: const [
+                                  Card(
+                                    child: TextField(),
                                   ),
                                 ]),
                               ),

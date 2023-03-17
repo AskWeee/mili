@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
 
+enum SingingCharacter { lafayette, jefferson }
+
 class Helper {
   var logger = Logger();
 
