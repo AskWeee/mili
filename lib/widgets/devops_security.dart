@@ -18,7 +18,7 @@ class _DevopsSecurityState extends State<DevopsSecurity> {
   final BoxDecoration _boxDecorationRoot = BoxDecoration(border: Border.all(color: const Color.fromRGBO(49, 149, 249, 1), width: 1));
   final BoxDecoration _boxDecorationContainer = BoxDecoration(border: Border.all(color: const Color.fromRGBO(49, 149, 249, 1), width: 1));
 
-  List _listBocoJars = [
+  final List _listBocoJars = [
     [1, '重大故障', 'fastjson', '1.0.1', '<dependency></dependency>', '2023-01-01', '有害', '无解', '无依赖', false],
     [2, '重大故障', 'fastjson', '1.0.1', '<dependency></dependency>', '2023-01-01', '有害', '无解', '无依赖', false],
     [3, '重大故障', 'fastjson', '1.0.1', '<dependency></dependency>', '2023-01-01', '有害', '无解', '无依赖', false],
@@ -26,7 +26,65 @@ class _DevopsSecurityState extends State<DevopsSecurity> {
     [5, '重大故障', 'fastjson', '1.0.1', '<dependency></dependency>', '2023-01-01', '有害', '无解', '无依赖', false],
     [6, '重大故障', 'fastjson', '1.0.1', '<dependency></dependency>', '2023-01-01', '有害', '无解', '无依赖', false],
   ];
+
+  final List<Map> _commands = [
+    {"cmd": '', "arguments": [], "dir": '', "title": "请选择指令"},
+    {
+      "cmd": 'nerdctl',
+      "arguments": ['--namespace=k8s.io', 'image', 'ls'],
+      "dir": '',
+      "title": "获取k8s.io命名空间下的镜像列表"
+    },
+    {
+      "cmd": 'kubectl',
+      "arguments": ['get', 'pods'],
+      "dir": '',
+      "title": "获取所有的 Pod 资源"
+    },
+    {
+      "cmd": 'git',
+      "arguments": ['branch'],
+      "dir": '/Users/eric/dev/flutter/mili',
+      "title": "获取分支列表"
+    },
+    {
+      "cmd": 'git',
+      "arguments": ['log'],
+      "dir": '/Users/eric/dev/flutter/mili',
+      "title": "获取提交日志"
+    },
+    {
+      "cmd": 'ansible',
+      "arguments": ['all', '-m', 'ping'],
+      "dir": '/Users/eric/.local/bin',
+      "title": "测试主机存活"
+    },
+    {
+      "cmd": 'mvn',
+      "arguments": ['dependency:tree'],
+      "dir": '/Users/eric/dev/gitlab/mamo/src/jargon',
+      "title": "显示依赖树"
+    },
+  ];
+
+  List<DropdownMenuItem> getCommands() {
+    List<DropdownMenuItem> myResult = [];
+
+    int i = 0;
+    for (var element in _commands) {
+      myResult.add(DropdownMenuItem(
+        value: i++,
+        child: Text("${element['cmd']} - ${element['title']}"),
+      ));
+    }
+
+    return myResult;
+  }
+
   int _rowSelectedLast = -1;
+  int statusSelected = 0;
+
+  final TextEditingController _controllerCmdResult = TextEditingController();
 
   Widget makeWidgetOpenJarsBlackList() {
     return Container(
@@ -474,6 +532,44 @@ class _DevopsSecurityState extends State<DevopsSecurity> {
     return myResult;
   }
 
+  Widget makeWidgetRunCmd() {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Card(
+                child: DropdownButton(
+                    isExpanded: true,
+                    value: statusSelected,
+                    items: getCommands(),
+                    onChanged: (value) {
+                      setState(() {
+                        statusSelected = value!;
+                        if (value != 0) {
+                          getCmdResult(_commands[value]["cmd"], _commands[value]["arguments"], _commands[value]["dir"]);
+                        }
+                      });
+                    }),
+              ),
+            ),
+          ],
+        ),
+        Expanded(
+          child: Container(
+            alignment: Alignment.topLeft,
+            child: Card(
+              child: TextField(
+                controller: _controllerCmdResult,
+                maxLines: 200,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget layoutMain() {
     return Container(
       alignment: Alignment.topLeft,
@@ -515,7 +611,7 @@ class _DevopsSecurityState extends State<DevopsSecurity> {
                       padding: const EdgeInsets.all(10),
                       alignment: Alignment.topLeft,
                       decoration: _boxDecorationContainer,
-                      child: const Text('此页面为演示页面'),
+                      child: makeWidgetRunCmd(),
                     ),
                   ],
                 )),
@@ -523,6 +619,22 @@ class _DevopsSecurityState extends State<DevopsSecurity> {
         ]),
       ),
     );
+  }
+
+  void getCmdResult(String cmd, List<String> arguments, String dir) {
+    _helper.postCmd(cmd, arguments, dir).then((List value) {
+      _logger.d('get boco jars >>>${value.length}<<<');
+
+      String cmdResult = "";
+      if (value.isNotEmpty) {
+        for (var element in value) {
+          _logger.d(element);
+          cmdResult += element + '\n';
+        }
+      }
+
+      _controllerCmdResult.text = cmdResult;
+    });
   }
 
   @override

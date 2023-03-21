@@ -172,9 +172,9 @@ class _DevopsReleaseState extends State<DevopsRelease> {
             height: 10,
           ),
           Row(
-            children: [
-              const Text('版本列表：'),
-              const Spacer(),
+            children: const [
+              Text('版本列表：'),
+              Spacer(),
             ],
           ),
           Card(
@@ -224,7 +224,7 @@ class _DevopsReleaseState extends State<DevopsRelease> {
                   DropdownMenuItem(
                     value: '1.0.1',
                     child: Text('项目经理 X 于 2022-01-01 申请'),
-                  )
+                  ),
                 ],
                 onChanged: (value) {
                   setState(() {
