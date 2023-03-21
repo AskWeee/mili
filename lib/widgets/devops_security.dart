@@ -49,6 +49,18 @@ class _DevopsSecurityState extends State<DevopsSecurity> {
     },
     {
       "cmd": 'git',
+      "arguments": ['switch', 'devops'],
+      "dir": '/Users/eric/dev/flutter/mili',
+      "title": "切换分支到 devops"
+    },
+    {
+      "cmd": 'git',
+      "arguments": ['switch', 'devops-boco-jars'],
+      "dir": '/Users/eric/dev/flutter/mili',
+      "title": "切换分支到 devops-boco-jars"
+    },
+    {
+      "cmd": 'git',
       "arguments": ['log'],
       "dir": '/Users/eric/dev/flutter/mili',
       "title": "获取提交日志"
