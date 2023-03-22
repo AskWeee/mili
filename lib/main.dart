@@ -1,10 +1,13 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:mili/utils/doraemon.dart';
 import 'package:mili/widgets/app_root.dart';
 
 void main() {
-  runApp(const MyApp());
+  Doraemon.init().then((e) {
+    runApp(const MyApp());
+  });
 }
 
 class MyCustomScrollBehavior extends MaterialScrollBehavior {

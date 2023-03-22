@@ -9,8 +9,8 @@ import 'package:mili/widgets/devops_src.dart';
 import 'package:mili/widgets/devops_dev_tools.dart';
 import 'package:mili/widgets/home_footer.dart';
 import 'package:mili/widgets/home_navs.dart';
-import 'devops_products.dart';
-import '../utils/events.dart';
+import 'package:mili/widgets/devops_products.dart';
+import 'package:mili/utils/events.dart';
 
 class AppRoot extends StatefulWidget {
   const AppRoot({super.key, required this.title});

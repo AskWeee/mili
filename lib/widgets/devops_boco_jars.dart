@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter_treeview/flutter_treeview.dart';
+import 'package:mili/utils/doraemon.dart';
 import 'package:mili/utils/helper.dart';
 import 'package:intl/intl.dart';
-import '../utils/events.dart';
+import 'package:mili/utils/events.dart';
 
 class DevopsBocoJars extends StatefulWidget {
   const DevopsBocoJars({super.key});
@@ -832,12 +833,12 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
   }
 
   void onButtonPressedAddBocoJar() async {
-    bool? isConfirmed = await showDialogAddBocoJar();
+    Map? dialogResult = await showDialogAddBocoJar();
 
-    if (isConfirmed != null) {
-      if (isConfirmed) {
-        _logger.d("add boco jar");
-        addBocoJar();
+    if (dialogResult != null) {
+      if (dialogResult["isConfirmed"]) {
+        addBocoJar(dialogResult["values"]["uuid"], dialogResult["values"]["productTitle"], dialogResult["values"]["productUuid"], dialogResult["values"]["groupTitle"],
+            dialogResult["values"]["groupUuid"], dialogResult["values"]["artifactTitle"], dialogResult["values"]["artifactUuid"]);
       } else {
         _logger.d("放弃 add boco jar 操作");
       }
@@ -906,8 +907,8 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
     );
   }
 
-  Future<bool?> showDialogAddBocoJar() {
-    return showDialog<bool>(
+  Future<Map?> showDialogAddBocoJar() {
+    return showDialog<Map>(
       context: context,
       builder: (context) {
         return DialogAddBocoJar();
@@ -1105,20 +1106,22 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
   }
 
   void getBocoJars() {
-    _helper.getBocoJars().then((List value) {
-      _logger.d('get boco jars >>>${value.length}<<<');
+    _helper.postExsqlSelect("boco_jars", [{}]).then((Map<String, dynamic> result) {
+      List newlistBocoJars = [];
+      int rowCount = (result["data"] as List).length;
+      //int countColumns = result["data"]?[0]?.length + 1;
 
-      if (value.isNotEmpty) {
-        for (List element in value) {
-          element.add(false);
-        }
-        for (int i = 0; i < 19; i++) {
-          value.add(List.from(value[0]));
-        }
+      for (var row in result["data"] as List) {
+        row.add(false);
+      }
+
+      for (int i = 1; i < rowCount; i++) {
+        // newlistBocoJars.add(List.from(result["data"]?[i] as List));
+        newlistBocoJars.add(result["data"]?[i]);
       }
 
       setState(() {
-        _listBocoJars = value;
+        _listBocoJars = newlistBocoJars;
       });
 
       // scrollControllerTable.jumpTo(1);
@@ -1126,13 +1129,22 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
     });
   }
 
-  void addBocoJar() {
-    List newListBocoJars = [
-      [1, 'a', 'a', 'a', 'a', 'a', 'a']
-    ];
+  void addBocoJar(String uuid, String productTitle, String productUuid, String groupTitle, String groupUuit, String artifactTitle, String artifactUuid) {
+    //uuid	product_title	product_id	group_title	group_id	artifact_title	artifact_id
+    List values = [];
+    values.add(uuid);
+    values.add(productTitle);
+    values.add(productUuid);
+    values.add(groupTitle);
+    values.add(groupUuit);
+    values.add(artifactTitle);
+    values.add(artifactUuid);
 
-    setState(() {
-      _listBocoJars = newListBocoJars;
+    _helper.postExsqlInsert("boco_jars", values).then((value) {
+      setState(() {
+        values.add(false);
+        _listBocoJars.add(values);
+      });
     });
   }
 
@@ -1162,6 +1174,9 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
       _logger.d('WidgetsBinding.instance.addPostFrameCallback');
 
       getBocoJars();
+
+      Doraemon.dbSystem.add("add by boco_jars.widget");
+      _logger.d("Helper.dbSystem.length = ${Doraemon.dbSystem.length}");
     });
 
     super.initState();
@@ -1504,7 +1519,16 @@ class DialogAddBocoJar extends Dialog {
                         ),
                         ElevatedButton(
                             onPressed: () {
-                              Navigator.of(context).pop(true);
+                              Map values = {
+                                "uuid": "1",
+                                "productTitle": "亿阳信通-故障管理",
+                                "productUuid": "com.boco.alarms",
+                                "groupTitle": "集中配置",
+                                "groupUuid": "ucmp",
+                                "artifactTitle": "集中配置客户端",
+                                "artifactUuid": "ucmp-client",
+                              };
+                              Navigator.of(context).pop({"isConfirmed": true, "values": values});
                             },
                             child: const Text('保存')),
                         const SizedBox(
@@ -1512,7 +1536,10 @@ class DialogAddBocoJar extends Dialog {
                         ),
                         ElevatedButton(
                             onPressed: () {
-                              Navigator.of(context).pop(false);
+                              Navigator.of(context).pop({
+                                "isConfirmed": false,
+                                "values": ["a"]
+                              });
                             },
                             child: const Text('放弃')),
                         const SizedBox(
@@ -1530,97 +1557,6 @@ class DialogAddBocoJar extends Dialog {
           ));
     });
   }
-
-  /*
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(''),
-                                  ElevatedButton(onPressed: () {}, child: const Text('校验')),
-                                ],
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              !_isArtifactIdChecked
-                                  ? const SizedBox(
-                                      width: 300,
-                                    )
-                                  : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                      const Text('制品名称不同，但制品ID相同，版本列表如下：'),
-                                      Container(
-                                        alignment: Alignment.topLeft,
-                                        // color: Colors.red,
-                                        //child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                                        //const Text('版本：'),
-                                        //Container(
-                                        //alignment: Alignment.topLeft,
-                                        width: 300,
-                                        child:
-                                            //     const Text(''),
-                                            DropdownButton(
-                                                isExpanded: true,
-                                                value: versionsSelected,
-                                                items: const [
-                                                  DropdownMenuItem(
-                                                    value: '',
-                                                    child: Text('待查'),
-                                                  ),
-                                                  DropdownMenuItem(
-                                                    value: '1.0.1',
-                                                    child: Text('1.0.1'),
-                                                  ),
-                                                  DropdownMenuItem(
-                                                    value: '1.1.0',
-                                                    child: Text('1.1.0'),
-                                                  )
-                                                ],
-                                                onChanged: (value) {
-                                                  setState(() {
-                                                    versionsSelected = value!;
-                                                  });
-                                                }),
-                                        //),
-                                        //   ]),
-                                        // ),
-                                        //]),
-                                      ),
-                                    ]),
-
-
-
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(''),
-                                  ElevatedButton(onPressed: () {}, child: const Text('校验')),
-                                ],
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              !_isStatusChecked
-                                  ? const SizedBox(
-                                      width: 300,
-                                    )
-                                  : Expanded(
-                                      flex: 1,
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: const [
-                                          Text(''),
-                                          Text('校验结果：'),
-                                        ],
-                                      ),
-                                    ),
-
-  */
 }
 
 //ignore: must_be_immutable

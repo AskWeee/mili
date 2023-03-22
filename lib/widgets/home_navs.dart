@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import '../utils/events.dart';
+import 'package:mili/utils/events.dart';
 
 class HomeNavs extends StatefulWidget {
   const HomeNavs({super.key});

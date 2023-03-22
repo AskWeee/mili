@@ -4,7 +4,8 @@ import 'package:logger/logger.dart';
 import 'package:flutter_treeview/flutter_treeview.dart';
 import 'package:mili/utils/helper.dart';
 import 'package:intl/intl.dart';
-import '../utils/events.dart';
+import 'package:mili/utils/events.dart';
+import 'package:mili/utils/doraemon.dart';
 
 class DevopsOpenJars extends StatefulWidget {
   const DevopsOpenJars({super.key});
@@ -939,6 +940,8 @@ class _DevopsOpenJarsState extends State<DevopsOpenJars> {
       _logger.d('WidgetsBinding.instance.addPostFrameCallback');
 
       getOpenJars();
+
+      _logger.d("Helper.dbSystem.length = ${Doraemon.dbSystem.length}");
     });
 
     super.initState();

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import '../utils/helper.dart';
+import 'package:mili/utils/helper.dart';
 
 class DevopsDashboard extends StatefulWidget {
   const DevopsDashboard({super.key});
