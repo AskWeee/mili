@@ -3,14 +3,14 @@ import 'package:logger/logger.dart';
 import 'package:mili/utils/helper.dart';
 import 'package:intl/intl.dart';
 
-class DevopsSecurity extends StatefulWidget {
-  const DevopsSecurity({super.key});
+class CoreScripts extends StatefulWidget {
+  const CoreScripts({super.key});
 
   @override
-  State<DevopsSecurity> createState() => _DevopsSecurityState();
+  State<CoreScripts> createState() => _CoreScriptsState();
 }
 
-class _DevopsSecurityState extends State<DevopsSecurity> {
+class _CoreScriptsState extends State<CoreScripts> {
   final Logger _logger = Logger();
   final Helper _helper = Helper();
 

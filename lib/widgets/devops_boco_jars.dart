@@ -837,8 +837,8 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
 
     if (dialogResult != null) {
       if (dialogResult["isConfirmed"]) {
-        addBocoJar(dialogResult["values"]["uuid"], dialogResult["values"]["productTitle"], dialogResult["values"]["productUuid"], dialogResult["values"]["groupTitle"],
-            dialogResult["values"]["groupUuid"], dialogResult["values"]["artifactTitle"], dialogResult["values"]["artifactUuid"]);
+        addBocoJar(dialogResult["values"]["uuid"], dialogResult["values"]["productTitle"], dialogResult["values"]["productId"], dialogResult["values"]["groupTitle"],
+            dialogResult["values"]["groupId"], dialogResult["values"]["artifactTitle"], dialogResult["values"]["artifactId"]);
       } else {
         _logger.d("放弃 add boco jar 操作");
       }
@@ -1129,20 +1129,20 @@ class _DevopsBocoJarsState extends State<DevopsBocoJars> {
     });
   }
 
-  void addBocoJar(String uuid, String productTitle, String productUuid, String groupTitle, String groupUuit, String artifactTitle, String artifactUuid) {
+  void addBocoJar(String uuid, String productTitle, String productId, String groupTitle, String groupId, String artifactTitle, String artifactId) {
     //uuid	product_title	product_id	group_title	group_id	artifact_title	artifact_id
     List values = [];
     values.add(uuid);
     values.add(productTitle);
-    values.add(productUuid);
+    values.add(productId);
     values.add(groupTitle);
-    values.add(groupUuit);
+    values.add(groupId);
     values.add(artifactTitle);
-    values.add(artifactUuid);
+    values.add(artifactId);
 
     _helper.postExsqlInsert("boco_jars", values).then((value) {
+      values.add(false);
       setState(() {
-        values.add(false);
         _listBocoJars.add(values);
       });
     });
@@ -1522,11 +1522,11 @@ class DialogAddBocoJar extends Dialog {
                               Map values = {
                                 "uuid": "1",
                                 "productTitle": "亿阳信通-故障管理",
-                                "productUuid": "com.boco.alarms",
+                                "productId": "com.boco.alarms",
                                 "groupTitle": "集中配置",
-                                "groupUuid": "ucmp",
+                                "groupId": "ucmp",
                                 "artifactTitle": "集中配置客户端",
-                                "artifactUuid": "ucmp-client",
+                                "artifactId": "ucmp-client",
                               };
                               Navigator.of(context).pop({"isConfirmed": true, "values": values});
                             },

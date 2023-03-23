@@ -125,13 +125,95 @@ class _HomeNavsState extends State<HomeNavs> {
                             style: TextStyle(color: _colorNavigatorUnselected),
                           ))),
                   TextButton(
-                      onPressed: () => {_onNavigatorPressed('安全管理')},
-                      child: Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            '安全管理',
-                            style: TextStyle(color: _colorNavigatorUnselected),
-                          ))),
+                    onPressed: () => {_onNavigatorPressed('安全管理')},
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        '安全管理',
+                        style: TextStyle(color: _colorNavigatorUnselected),
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: null,
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        '运维平台',
+                        style: TextStyle(color: _colorNavigatorSelected, fontSize: 16),
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => {_onNavigatorPressed('运维平台流程看板')},
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        '流程看板',
+                        style: TextStyle(color: _colorNavigatorUnselected),
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => {_onNavigatorPressed('运维平台主机管理')},
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        '主机管理',
+                        style: TextStyle(color: _colorNavigatorUnselected),
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => {_onNavigatorPressed('运维平台环境管理')},
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        '环境管理',
+                        style: TextStyle(color: _colorNavigatorUnselected),
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => {_onNavigatorPressed('运维平台应用管理')},
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        '应用管理',
+                        style: TextStyle(color: _colorNavigatorUnselected),
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => {_onNavigatorPressed('运维平台自身监控')},
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        '自身监控',
+                        style: TextStyle(color: _colorNavigatorUnselected),
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: null,
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        '核心能力',
+                        style: TextStyle(color: _colorNavigatorSelected, fontSize: 16),
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => {_onNavigatorPressed('核心能力脚本管理')},
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        '脚本管理',
+                        style: TextStyle(color: _colorNavigatorUnselected),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

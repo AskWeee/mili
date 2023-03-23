@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:mili/widgets/core_scripts.dart';
 import 'package:mili/widgets/devops_boco_jars.dart';
 import 'package:mili/widgets/devops_dashboard.dart';
 import 'package:mili/widgets/devops_open_jars.dart';
@@ -11,6 +12,7 @@ import 'package:mili/widgets/home_footer.dart';
 import 'package:mili/widgets/home_navs.dart';
 import 'package:mili/widgets/devops_products.dart';
 import 'package:mili/utils/events.dart';
+import 'package:mili/widgets/oncloud_hosts.dart';
 
 class AppRoot extends StatefulWidget {
   const AppRoot({super.key, required this.title});
@@ -115,6 +117,12 @@ class _AppRootState extends State<AppRoot> {
               break;
             case '安全管理':
               navigatorChanged(navigator, const DevopsSecurity());
+              break;
+            case '运维平台主机管理':
+              navigatorChanged(navigator, const OnCloudHosts());
+              break;
+            case '核心能力脚本管理':
+              navigatorChanged(navigator, const CoreScripts());
               break;
           }
           break;
