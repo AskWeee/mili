@@ -12,6 +12,7 @@ import 'package:mili/widgets/home_footer.dart';
 import 'package:mili/widgets/home_navs.dart';
 import 'package:mili/widgets/devops_products.dart';
 import 'package:mili/utils/events.dart';
+import 'package:mili/widgets/oncloud_apps.dart';
 import 'package:mili/widgets/oncloud_hosts.dart';
 
 class AppRoot extends StatefulWidget {
@@ -120,6 +121,9 @@ class _AppRootState extends State<AppRoot> {
               break;
             case '运维平台主机管理':
               navigatorChanged(navigator, const OnCloudHosts());
+              break;
+            case '运维平台应用管理':
+              navigatorChanged(navigator, const OnCloudApps());
               break;
             case '核心能力脚本管理':
               navigatorChanged(navigator, const CoreScripts());

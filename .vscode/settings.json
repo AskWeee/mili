@@ -1,8 +1,27 @@
 {
     "[dart]": {
-        "editor.rulers": []
-    }
-    // ,"background.useDefault": false
-    // ,"background.customImages": ["file:///Users/somepath/a.jpg"]
-
+        "editor.rulers": [],
+    },
+    "editor.tokenColorCustomizations": {
+        "[Default Dark+]": {
+            "comments": "#AFAFAF",
+        }
+    },
+    "workbench.colorCustomizations": {
+        "[Default Dark+]": {
+            "editor.background": "#003F00",
+            "window.activeBorder": "#FF0000",
+            "debugToolBar.background": "#005F00",
+            "panel.background": "#3F3F3F",
+            "sideBar.border": "#9FCF9F",
+            "tab.activeBorder": "#9FFF9F",
+            "titleBar.border": "#9FCF9F",
+            "tree.indentGuidesStroke": "#9FFF9F",
+            "editorIndentGuide.background": "#5F6F5F",
+            "editorIndentGuide.activeBackground": "#5F9F9F",
+            "minimapSlider.background": "#005F00",
+            "minimapSlider.activeBackground": "#005F00",
+            "minimapSlider.hoverBackground": "#005F00"
+        }
+    },
 }
