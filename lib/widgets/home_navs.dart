@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:mili/utils/events.dart';
+import 'package:mili/utils/helper.dart';
 
 class HomeNavs extends StatefulWidget {
   const HomeNavs({super.key});
@@ -11,6 +12,8 @@ class HomeNavs extends StatefulWidget {
 
 class _HomeNavsState extends State<HomeNavs> {
   final _logger = Logger();
+  bool isMouseOver = false;
+  bool isSelected = false;
 
   void _onNavigatorPressed(String navigator) {
     _logger.d('_onNavigatorPressed');
@@ -175,12 +178,23 @@ class _HomeNavsState extends State<HomeNavs> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () => {_onNavigatorPressed('运维平台应用管理')},
+                    onHover: (value) {
+                      setState(() {
+                        isMouseOver = value;
+                      });
+                      eventBus.fire(MessageEvent(isMouseOver ? "UCMP的新一代界面。" : CustomConstants.messageDefault));
+                    },
+                    onPressed: () {
+                      setState(() {
+                        isSelected = true;
+                      });
+                      _onNavigatorPressed('运维平台应用管理');
+                    },
                     child: Align(
                       alignment: Alignment.center,
                       child: Text(
                         '应用管理',
-                        style: TextStyle(color: _colorNavigatorUnselected),
+                        style: TextStyle(color: (isMouseOver || isSelected) ? _colorNavigatorSelected : _colorNavigatorUnselected),
                       ),
                     ),
                   ),

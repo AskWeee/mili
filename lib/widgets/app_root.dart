@@ -78,19 +78,27 @@ class _AppRootState extends State<AppRoot> {
   }
 
   // TB layout
-  Column _layoutMain() {
-    return Column(
-      children: <Widget>[
-        DefaultTextStyle(style: const TextStyle(fontSize: 16, color: Color.fromRGBO(255, 255, 255, 1)), child: Expanded(flex: 1, child: _layoutWorkspace())),
-        const SizedBox(height: 30, child: HomeFooter()),
-      ],
+  Widget _layoutMain() {
+    return DefaultTextStyle(
+      style: const TextStyle(fontSize: 16, color: Color.fromRGBO(255, 255, 255, 1)),
+      child: Column(
+        children: <Widget>[
+          Expanded(
+            flex: 1,
+            child: _layoutWorkspace(),
+          ),
+          Container(
+            alignment: Alignment.topLeft,
+            child: const HomeFooter(),
+          ),
+        ],
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     eventBus.on().listen((event) {
-      _logger.d(event.runtimeType);
       switch (event.runtimeType) {
         case EventOnNavigatorChanged:
           var navigator = (event as EventOnNavigatorChanged).navigator;

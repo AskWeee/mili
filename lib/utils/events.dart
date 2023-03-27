@@ -15,3 +15,9 @@ class MyEventB {
 
   MyEventB(this.text);
 }
+
+// 定义一个事件类，用于传递消息
+class MessageEvent {
+  final String message;
+  MessageEvent(this.message);
+}

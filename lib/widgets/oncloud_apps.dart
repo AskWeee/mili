@@ -4,9 +4,12 @@ import 'package:logger/logger.dart';
 import 'package:mili/utils/doraemon.dart';
 import 'package:mili/utils/helper.dart';
 import 'package:intl/intl.dart';
+import 'package:mili/utils/events.dart';
+
+import 'feking_dialog.dart';
 
 /// FUNC01：呈现云环境中应用的实际部署情况
-/// FUNC02：呈现可用的应用列表
+/// FUNC02：呈现可用的应用列表【👌🏻】
 ///   显示全集，可过滤installed状态，类似VSCODE的插件库形式，点击应用，可看到应用的说明页面
 ///   应用名称，部署状态，部署版本，最新版本
 ///   按钮：部署，针对已经部署的应用，提供：扩缩，配置，启动，重启，停止，下线，更新，等操作，在应用说明页面体现
@@ -63,29 +66,6 @@ class _OnCloudAppsState extends State<OnCloudApps> {
   String developerSelected = 'gaoyanfu';
   String statusSelected = 'unknown';
 
-  final Color _colorBorderNormal = const Color.fromRGBO(0, 122, 204, 1);
-  final Color _colorSplitter = const Color.fromRGBO(0, 122, 204, 1);
-
-  BoxDecoration get _boxDebug => BoxDecoration(
-        border: Border.all(
-          color: Colors.red,
-          width: 1,
-        ),
-      );
-  BoxDecoration get _boxNormal => BoxDecoration(
-        border: Border.all(
-          color: _colorBorderNormal,
-          width: 1,
-        ),
-      );
-
-  BoxDecoration get _boxNone => BoxDecoration(
-        border: Border.all(
-          color: Colors.transparent,
-          width: 1,
-        ),
-      );
-
   final ScrollController scrollControllerTable = ScrollController();
   final ScrollController scrollControllerDataTable = ScrollController();
 
@@ -96,15 +76,6 @@ class _OnCloudAppsState extends State<OnCloudApps> {
         logger.d(value);
       });
 
-  Widget makeBoxDebug(String message) {
-    return Container(
-      alignment: Alignment.topLeft,
-      decoration: _boxDebug,
-      padding: const EdgeInsets.all(5),
-      child: Text(message),
-    );
-  }
-
   Widget makeLayoutMain(BuildContext context) {
     return LayoutBuilder(builder: (context, BoxConstraints constraints) {
       if (_maxWidth == 0) {
@@ -113,17 +84,17 @@ class _OnCloudAppsState extends State<OnCloudApps> {
 
       return Container(
         alignment: Alignment.topLeft,
-        decoration: _boxNormal,
+        decoration: CustomConstants.boxNormal,
         child: Row(children: [
           Container(
             alignment: Alignment.topLeft,
-            decoration: _boxNormal,
+            decoration: CustomConstants.boxNormal,
             width: _maxWidth * _ratio,
             child: Column(
               children: [
                 Container(
                   alignment: Alignment.topLeft,
-                  decoration: _boxNormal,
+                  decoration: CustomConstants.boxNormal,
                   child: Row(children: [
                     const Expanded(
                       child: SizedBox(
@@ -144,6 +115,9 @@ class _OnCloudAppsState extends State<OnCloudApps> {
                       width: 5,
                     ),
                     ElevatedButton(
+                      onHover: (value) {
+                        showHelpMessage(value, CustomConstants.messageOnCloudAppsRefresh);
+                      },
                       onPressed: onButtonPressedRefresh,
                       child: const Text("刷新"),
                     ),
@@ -151,6 +125,9 @@ class _OnCloudAppsState extends State<OnCloudApps> {
                       width: 5,
                     ),
                     ElevatedButton(
+                      onHover: (value) {
+                        showHelpMessage(value, CustomConstants.messageOnCloudAppsAdd);
+                      },
                       onPressed: onButtonPressedAddApp,
                       child: const Text("新增"),
                     ),
@@ -158,6 +135,9 @@ class _OnCloudAppsState extends State<OnCloudApps> {
                       width: 5,
                     ),
                     ElevatedButton(
+                      onHover: (value) {
+                        showHelpMessage(value, CustomConstants.messageOnCloudAppsModify);
+                      },
                       onPressed: () {},
                       child: const Text("修改"),
                     ),
@@ -165,6 +145,9 @@ class _OnCloudAppsState extends State<OnCloudApps> {
                       width: 5,
                     ),
                     ElevatedButton(
+                      onHover: (value) {
+                        showHelpMessage(value, CustomConstants.messageOnCloudAppsDelete);
+                      },
                       onPressed: () {},
                       child: const Text("删除"),
                     ),
@@ -180,7 +163,7 @@ class _OnCloudAppsState extends State<OnCloudApps> {
             behavior: HitTestBehavior.translucent,
             child: Container(
               alignment: Alignment.topLeft,
-              color: _colorSplitter,
+              color: CustomConstants.splitterColor,
               width: _splitterWidth,
             ),
             onPanUpdate: (DragUpdateDetails details) {
@@ -197,13 +180,19 @@ class _OnCloudAppsState extends State<OnCloudApps> {
           Expanded(
             child: Container(
               alignment: Alignment.topLeft,
-              decoration: _boxNormal,
+              decoration: CustomConstants.boxNormal,
               child: makeTabViewMain(),
             ),
           ),
         ]),
       );
     });
+  }
+
+  void showHelpMessage(bool isMouseOver, String message) {
+    eventBus.fire(
+      MessageEvent(isMouseOver ? message : CustomConstants.messageDefault),
+    );
   }
 
   Widget makeDataTableApps() {
@@ -236,7 +225,7 @@ class _OnCloudAppsState extends State<OnCloudApps> {
             child: Container(
                 alignment: Alignment.topLeft,
                 margin: const EdgeInsets.fromLTRB(3, 3, 3, 0),
-                decoration: _boxNormal,
+                decoration: CustomConstants.boxNormal,
                 child: TabBarView(
                   children: [
                     makeAppView(),
@@ -304,17 +293,37 @@ class _OnCloudAppsState extends State<OnCloudApps> {
           Expanded(
             flex: 1,
             child: Container(
-                alignment: Alignment.topLeft,
-                margin: const EdgeInsets.fromLTRB(3, 3, 3, 0),
-                decoration: _boxNormal,
-                child: TabBarView(
-                  children: [
-                    makeBoxDebug('未部署，无运行实例\n'),
-                    makeBoxDebug('应用控制器：未指定\n'),
-                    makeBoxDebug('模板参数\n参数1：xxx\n参数1：xxx\n参数1：xxx\n实例参数：\n实例1参数：xxx\n参数1：xxx\n参数1：xxx\n'),
-                    makeBoxDebug("支持1：xxx\n支持1：xxx\n修正1：xxx\n修正1：xxx\n废除1：xxx\n废除1：xxx\n"),
-                  ],
-                )),
+              alignment: Alignment.topLeft,
+              margin: const EdgeInsets.fromLTRB(3, 3, 3, 0),
+              decoration: CustomConstants.boxNormal,
+              child: TabBarView(
+                children: [
+                  _helper.makeBoxDebug('''简要说明:
+情况1: 未部署，无运行实例
+情况2: 已部署, 但集群未启动,此时显示各个实例,可以在这里配置实例参数
+情况2: 已部署, 已启动, 此时显示各个实例, 可以单独停止, 重启, 启动, 当不可以更新(更新必须整体更新),也可以配置实例参数,修改参数后如果没有点击重启,并退出界面,更改的参数将失效(会有提示)
+'''),
+                  _helper.makeBoxDebug('''简要说明:
+提供选项: 选择应用控制器, 无论部署与否, 都有这个选项!
+最好自动关联, 在新增应用的是否, 要求指定相应的应用控制器. 没有构建则需要构建.
+如果没有关联, 则在此选择!
+
+情况1: 未部署，无运行实例
+情况2: 已部署, 但集群未启动,此时显示各个实例,可以在这里配置实例参数
+情况2: 已部署, 已启动, 此时显示各个实例, 可以单独停止, 重启, 启动, 当不可以更新(更新必须整体更新),也可以配置实例参数,修改参数后如果没有点击重启,并退出界面,更改的参数将失效(会有提示)
+'''),
+                  _helper.makeBoxDebug('''简要说明:
+配置应用模板参数
+如果已经启动,也可以修改,但必须通过应用来保存,否则修改无效(目的是保证运行参数和保存的参数一致)
+
+'''),
+                  _helper.makeBoxDebug('''简要说明:
+支持md格式文件, 默认为 ReleaseNotes.md
+
+'''),
+                ],
+              ),
+            ),
           ),
         ]),
       ),
@@ -400,7 +409,7 @@ class _OnCloudAppsState extends State<OnCloudApps> {
   Widget makeAppView() {
     return Container(
       alignment: Alignment.topLeft,
-      decoration: _boxNone,
+      decoration: CustomConstants.boxNone,
       margin: const EdgeInsets.fromLTRB(5, 5, 5, 0),
       child: Column(children: [
         Row(
@@ -418,13 +427,29 @@ class _OnCloudAppsState extends State<OnCloudApps> {
             ),
             const Spacer(),
             ElevatedButton(
-              onPressed: () {},
+              onHover: (value) {
+                showHelpMessage(value, CustomConstants.messageOnCloudAppsDeploy);
+              },
+              onPressed: onButtonPressedDeployApp,
               child: const Text("部署"),
             ),
+            // const SizedBox(
+            //   width: 5,
+            // ),
+            // ElevatedButton(
+            //   onHover: (value) {
+            //     showHelpMessage(value, CustomConstants.messageOnCloudAppsConfig);
+            //   },
+            //   onPressed: onButtonPressedConfigApp,
+            //   child: const Text("配置"),
+            // ),
             const SizedBox(
               width: 5,
             ),
             ElevatedButton(
+              onHover: (value) {
+                showHelpMessage(value, CustomConstants.messageOnCloudAppsStart);
+              },
               onPressed: () {},
               child: const Text("启动"),
             ),
@@ -432,6 +457,9 @@ class _OnCloudAppsState extends State<OnCloudApps> {
               width: 5,
             ),
             ElevatedButton(
+              onHover: (value) {
+                showHelpMessage(value, CustomConstants.messageOnCloudAppsRestart);
+              },
               onPressed: () {},
               child: const Text("重启"),
             ),
@@ -439,6 +467,9 @@ class _OnCloudAppsState extends State<OnCloudApps> {
               width: 5,
             ),
             ElevatedButton(
+              onHover: (value) {
+                showHelpMessage(value, CustomConstants.messageOnCloudAppsStop);
+              },
               onPressed: () {},
               child: const Text("停止"),
             ),
@@ -446,6 +477,9 @@ class _OnCloudAppsState extends State<OnCloudApps> {
               width: 5,
             ),
             ElevatedButton(
+              onHover: (value) {
+                showHelpMessage(value, CustomConstants.messageOnCloudAppsUpdate);
+              },
               onPressed: () {},
               child: const Text("更新"),
             ),
@@ -453,6 +487,9 @@ class _OnCloudAppsState extends State<OnCloudApps> {
               width: 5,
             ),
             ElevatedButton(
+              onHover: (value) {
+                showHelpMessage(value, CustomConstants.messageOnCloudAppsUndeploy);
+              },
               onPressed: () {},
               child: const Text("下线"),
             ),
@@ -461,7 +498,7 @@ class _OnCloudAppsState extends State<OnCloudApps> {
         Expanded(
           child: Container(
             alignment: Alignment.bottomLeft,
-            decoration: _boxNone,
+            decoration: CustomConstants.boxNone,
             margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
             child: makeTabViewApp(),
           ),
@@ -473,11 +510,11 @@ class _OnCloudAppsState extends State<OnCloudApps> {
   Widget makeKubernetesView() {
     return Container(
       alignment: Alignment.topLeft,
-      decoration: _boxNormal,
+      decoration: CustomConstants.boxNormal,
       child: Column(children: [
-        makeBoxDebug("Kubernetes"),
+        _helper.makeBoxDebug("Kubernetes"),
         Expanded(
-          child: makeBoxDebug("做一个简化版本的rancher"),
+          child: _helper.makeBoxDebug("做一个简化版本的rancher"),
         ),
       ]),
     );
@@ -492,10 +529,27 @@ class _OnCloudAppsState extends State<OnCloudApps> {
 
     if (dialogResult != null) {
       if (dialogResult["isConfirmed"]) {
-        addApp(dialogResult["values"]["uuid"], dialogResult["values"]["appName"], dialogResult["values"]["appId"], dialogResult["values"]["deployStatus"],
-            dialogResult["values"]["deployVersion"], dialogResult["values"]["latestVersion"]);
-      } else {
-        _logger.d("放弃【新增主机】操作");
+        _logger.d(dialogResult["values"]);
+      }
+    }
+  }
+
+  void onButtonPressedDeployApp() async {
+    Map? dialogResult = await showDialogDeployApp();
+
+    if (dialogResult != null) {
+      if (dialogResult["isConfirmed"]) {
+        _logger.d(dialogResult["values"]);
+      }
+    }
+  }
+
+  void onButtonPressedConfigApp() async {
+    Map? dialogResult = await showDialogConfigApp();
+
+    if (dialogResult != null) {
+      if (dialogResult["isConfirmed"]) {
+        _logger.d(dialogResult["values"]);
       }
     }
   }
@@ -521,7 +575,277 @@ class _OnCloudAppsState extends State<OnCloudApps> {
     return showDialog<Map>(
       context: context,
       builder: (context) {
-        return DialogAddApp();
+        return FekingDialog(
+          title: "新增应用",
+          height: 900,
+          children: [
+            Expanded(
+              child: Container(
+                alignment: Alignment.topLeft,
+                decoration: CustomConstants.boxNone,
+                child: Expanded(
+                  child: Column(children: [
+                    Row(children: [
+                      const Text("Dockerfile:"),
+                      const Spacer(),
+                      ElevatedButton(
+                        onPressed: () {},
+                        child: const Text('选择'),
+                      ),
+                    ]),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    const TextField(),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Row(children: [
+                      const Text("Dockerfile 详情:"),
+                      const Spacer(),
+                      ElevatedButton(
+                        onPressed: () {},
+                        child: const Text('构建'),
+                      ),
+                    ]),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    const TextField(
+                      maxLines: 10,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Row(children: [
+                      const Text("Harbor镜像列表:"),
+                      const Expanded(
+                        child: TextField(),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {},
+                        child: const Text('搜索'),
+                      ),
+                    ]),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Expanded(
+                      child: _helper.makeBoxDebug("此处放一个DataTable, 显示镜像列表"),
+                    ),
+                  ]),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<Map?> showDialogDeployApp() {
+    return showDialog<Map>(
+      context: context,
+      builder: (context) {
+        return FekingDialog(
+          title: "部署应用",
+          height: 900,
+          children: [
+            Expanded(
+              child: Container(
+                alignment: Alignment.topLeft,
+                decoration: CustomConstants.boxNone,
+                child: Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(children: [
+                        const Text("请选择镜像文件:"),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Expanded(
+                          child: DropdownButton(
+                              isExpanded: true,
+                              value: '',
+                              items: const [
+                                DropdownMenuItem(
+                                  value: '',
+                                  child: Text('最新版本: nginx-3.01'),
+                                ),
+                                DropdownMenuItem(
+                                  value: '1',
+                                  child: Text('nginx-2.9'),
+                                ),
+                                DropdownMenuItem(
+                                  value: '2',
+                                  child: Text('nginx-2.8'),
+                                )
+                              ],
+                              onChanged: (value) {
+                                setState(() {
+                                  // companyProductIdSelected = value!;
+                                });
+                              }),
+                        ),
+                      ]),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      const Text("版本说明:"),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      const TextField(maxLines: 3),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      const Text("副本数量(部署pod的参数):"),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      const TextField(),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      const Text("CPU(其他部署pod的参数):"),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      const TextField(),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Row(
+                        children: [
+                          const Text("请选应用控制器(master)版本镜像:"),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          Expanded(
+                            child: DropdownButton(
+                                isExpanded: true,
+                                value: '',
+                                items: const [
+                                  DropdownMenuItem(
+                                    value: '',
+                                    child: Text('最新版本:nginx-master-1.0'),
+                                  ),
+                                ],
+                                onChanged: (value) {
+                                  setState(() {
+                                    // companyProductIdSelected = value!;
+                                  });
+                                }),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      const Text("版本说明:"),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      const TextField(maxLines: 5),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      const Text("副本数量(部署pod的参数):"),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      const TextField(),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      const Text("CPU(其他部署pod的参数):"),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      const TextField(),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Row(
+                        children: [
+                          const Text("请选运行环境:"),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          Expanded(
+                            child: DropdownButton(
+                                isExpanded: true,
+                                value: '',
+                                items: const [
+                                  DropdownMenuItem(
+                                    value: '',
+                                    child: Text('K8s测试环境A'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: '1',
+                                    child: Text('K8s测试环境B'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: '2',
+                                    child: Text('K8s生产环境'),
+                                  )
+                                ],
+                                onChanged: (value) {
+                                  setState(() {
+                                    // companyProductIdSelected = value!;
+                                  });
+                                }),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Expanded(
+                        child: _helper.makeBoxDebug("保存按钮应改为:部署. 部署后知识创建POD及mastpod,应用并不启动,包括master,因为参数还没有配置."),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<Map?> showDialogConfigApp() {
+    return showDialog<Map>(
+      context: context,
+      builder: (context) {
+        return FekingDialog(
+          title: "配置应用(UCMP新界面)",
+          width: 1200,
+          height: 900,
+          children: [
+            Expanded(
+              child: Container(
+                alignment: Alignment.topLeft,
+                decoration: CustomConstants.boxNone,
+                child: Expanded(
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 300,
+                        child: _helper.makeBoxDebug('tree'),
+                      ),
+                      Expanded(
+                        child: _helper.makeBoxDebug('detail'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
       },
     );
   }
@@ -580,375 +904,5 @@ class _OnCloudAppsState extends State<OnCloudApps> {
   @override
   Widget build(BuildContext context) {
     return makeLayoutMain(context);
-  }
-}
-
-//ignore: must_be_immutable
-class DialogAddApp extends Dialog {
-  DialogAddApp({super.key});
-
-  String companyProductIdSelected = '';
-  String groupIdSelected = '';
-  String versionsSelected = '';
-  String statusSelected = 'unknown';
-  String checkResultSelected = '';
-
-  bool _isArtifactIdChecked = false;
-
-  final TextEditingController _textControllerArtifactId = TextEditingController();
-  final TextEditingController _textControllerArtifactTitle = TextEditingController();
-  final TextEditingController _textControllerVersion = TextEditingController();
-  final TextEditingController _textControllerMemo = TextEditingController();
-  final TextEditingController _textControllerDependency = TextEditingController();
-  final TextEditingController _textControllerDeveloper = TextEditingController();
-
-  final _colorMask = const Color.fromRGBO(0, 0, 0, 0.2);
-  final _colorDialog = const Color.fromRGBO(255, 255, 255, 1);
-  final _colorTitleBar = const Color.fromRGBO(0, 55, 175, 1);
-  final _colorTitleBarBorder = const Color.fromRGBO(215, 215, 215, 1);
-  final _colorTitle = const Color.fromRGBO(255, 255, 255, 1);
-  final _colorContent = const Color.fromRGBO(215, 215, 215, 1);
-  final _colorContentBorder = const Color.fromRGBO(215, 215, 215, 1);
-
-  @override
-  Widget build(BuildContext context) {
-    return StatefulBuilder(builder: (context, StateSetter setState) {
-      return Material(
-          type: MaterialType.transparency,
-          child: Container(
-            alignment: Alignment.center,
-            color: _colorMask,
-            child: Container(
-              alignment: Alignment.center,
-              width: 800,
-              height: 600,
-              color: _colorDialog,
-              child: Column(children: [
-                Container(
-                  alignment: Alignment.center,
-                  height: 40,
-                  decoration: BoxDecoration(color: _colorTitleBar, border: Border.all(color: _colorTitleBarBorder, width: 1)),
-                  child: Text(
-                    '新增自研组件',
-                    style: TextStyle(color: _colorTitle, fontSize: 16),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    alignment: Alignment.topLeft,
-                    decoration: BoxDecoration(color: _colorContent, border: Border.all(color: _colorContentBorder, width: 1)),
-                    child: Column(children: [
-                      Expanded(
-                        child: Container(
-                          alignment: Alignment.topLeft,
-                          margin: const EdgeInsets.all(10),
-                          color: _colorContent,
-                          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                            const Text(
-                              '归属： com.boco.{产品标识}',
-                            ),
-                            //SizedBox(
-                            //width: 490,
-                            //child:
-                            DropdownButton(
-                                isExpanded: true,
-                                value: companyProductIdSelected,
-                                items: const [
-                                  DropdownMenuItem(
-                                    value: '',
-                                    child: Text('请选择'),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'com.boco.alarms',
-                                    child: Text('亿阳信通故障管理'),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'com.boco.trans',
-                                    child: Text('亿阳信通传输网管'),
-                                  )
-                                ],
-                                onChanged: (value) {
-                                  setState(() {
-                                    companyProductIdSelected = value!;
-                                  });
-                                }),
-                            //),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            const Text(
-                              '分组： GroupID = com.boco.{产品标识}.{分组标识}',
-                            ),
-                            //SizedBox(
-                            //width: 490,
-                            //child:
-                            DropdownButton(
-                                isExpanded: true,
-                                value: groupIdSelected,
-                                items: const [
-                                  DropdownMenuItem(
-                                    value: '',
-                                    child: Text('请选择'),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'common',
-                                    child: Text('通用组件'),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'ucmp',
-                                    child: Text('集中配置'),
-                                  )
-                                ],
-                                onChanged: (value) {
-                                  setState(() {
-                                    groupIdSelected = value!;
-                                  });
-                                }),
-                            //),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Row(children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text('制品标识： ArtifactID'),
-                                    Card(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(5.0),
-                                      ),
-                                      child: TextField(
-                                        controller: _textControllerArtifactId,
-                                        decoration: const InputDecoration(
-                                          hintText: '请输入关键字',
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(children: [
-                                      const Expanded(
-                                        child: Text('制品名称：'),
-                                      ),
-                                      !_isArtifactIdChecked
-                                          ? const SizedBox(
-                                              width: 10,
-                                            )
-                                          : Row(children: const [
-                                              Checkbox(value: false, onChanged: null),
-                                              Text('使用旧制品名称'),
-                                            ]),
-                                    ]),
-                                    Card(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(5.0),
-                                      ),
-                                      child: TextField(
-                                        controller: _textControllerArtifactTitle,
-                                        decoration: const InputDecoration(
-                                          hintText: '请输入关键字',
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ]),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Row(children: [
-                              Expanded(
-                                flex: 2,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text('组件版本： Version'),
-                                    Card(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(5.0),
-                                      ),
-                                      child: TextField(
-                                        controller: _textControllerVersion,
-                                        decoration: const InputDecoration(
-                                          hintText: '请输入关键字',
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Expanded(
-                                flex: 1,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text('版本状态：'),
-                                    DropdownButton(
-                                        isExpanded: true,
-                                        value: statusSelected,
-                                        items: const [
-                                          DropdownMenuItem(
-                                            value: 'unknown',
-                                            child: Text('请选择'),
-                                          ),
-                                          DropdownMenuItem(
-                                            value: 'planning',
-                                            child: Text('规划中'),
-                                          ),
-                                          DropdownMenuItem(
-                                            value: 'coding',
-                                            child: Text('开发中'),
-                                          ),
-                                          DropdownMenuItem(
-                                            value: 'released',
-                                            child: Text('已发布'),
-                                          ),
-                                        ],
-                                        onChanged: (value) {
-                                          setState(() {
-                                            statusSelected = value!;
-                                          });
-                                        }),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Expanded(
-                                flex: 1,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text('责任人：'),
-                                    Card(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(5.0),
-                                      ),
-                                      child: TextField(
-                                        controller: _textControllerDeveloper,
-                                        decoration: const InputDecoration(
-                                          hintText: '请输入关键字',
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ]),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Row(children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text('备注：'),
-                                    Card(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(5.0),
-                                      ),
-                                      child: TextField(
-                                        controller: _textControllerMemo,
-                                        decoration: const InputDecoration(
-                                          hintText: '请输入关键字',
-                                        ),
-                                        maxLines: 5,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text('坐标：'),
-                                    Card(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(5.0),
-                                      ),
-                                      child: TextField(
-                                        controller: _textControllerDependency,
-                                        decoration: const InputDecoration(
-                                          hintText: '请输入关键字',
-                                        ),
-                                        maxLines: 5,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ]),
-                          ]),
-                        ),
-                      ),
-                      Row(children: [
-                        const Spacer(),
-                        ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                _isArtifactIdChecked = !_isArtifactIdChecked;
-                              });
-                            },
-                            child: const Text('校验')),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        ElevatedButton(
-                            onPressed: () {
-                              Map values = {
-                                "uuid": "1",
-                                "appName": "Nginx",
-                                "appId": "nginx",
-                                "deployStatus": "未部署", // 欧拉
-                                "deployVersion": "", // 欧拉
-                                "latestVersion": "2.0",
-                              };
-                              Navigator.of(context).pop({"isConfirmed": true, "values": values});
-                            },
-                            child: const Text('保存')),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).pop({
-                                "isConfirmed": false,
-                                "values": ["a"]
-                              });
-                            },
-                            child: const Text('放弃')),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                      ]),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                    ]),
-                  ),
-                ),
-              ]),
-            ),
-          ));
-    });
   }
 }
